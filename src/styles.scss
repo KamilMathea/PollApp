@@ -1,1 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
+// 1. Abstracts (Variablen, Mixins)
+@forward 'styles/abstracts/variables';
+
+// 2. Vendors (Drittanbieter CSS)
+/* @forward 'styles/vendors/custom-vendors'; */
+
+// 3. Base (Resets & Typografie)
+@forward 'styles/base/reset';
+@forward 'styles/base/typography';
+
+// 4. Layout (Header, Grid)
+@forward 'styles/layout/header';
+@forward 'styles/layout/grid';
+
+// 5. Components (Buttons, Cards)
+@forward 'styles/components/buttons';
+@forward 'styles/components/cards';
+
+// 6. Pages (Einzelseiten-Styles)
+@forward 'styles/pages/home';
+
+// 7. Themes (Design-Themes)
+/* @forward 'styles/themes/theme'; */
