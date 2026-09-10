@@ -1,0 +1,40 @@
+@font-face {
+  font-family: 'Nerko One';
+  src: url('/assets/fonts/NerkoOne-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mulish';
+  src: url('/assets/fonts/Mulish-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nokora';
+  src: url('/assets/fonts/Nokora-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+$font-heading: 'Nerko One', cursive, sans-serif;
+$font-body: 'Mulish', sans-serif;
+$font-button: 'Nokora', sans-serif;
+
+body {
+  font-family: $font-body;
+  color: rgba(255, 255, 255, 1);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-heading;
+}
+
+button {
+  font-family: $font-button;
+}
