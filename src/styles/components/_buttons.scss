@@ -1,0 +1,70 @@
+@use '../abstracts/variables' as *;
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  font-family: 'Nokora', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: all 0.2s ease-in-out;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  @extend .btn;
+  background-color: $secondary-orange;
+  color: $text-dark;
+  border-radius: $radius-button;
+  padding: 12px 24px;
+
+  &:hover {
+    background-color: $primary-orange;
+  }
+}
+
+.btn-soft {
+  @extend .btn;
+  background-color: $orange-translucent;
+  color: $text-dark;
+  border-radius: $radius-button;
+  padding: 10px 20px;
+
+  &:hover {
+    background-color: $primary-orange;
+  }
+}
+
+.btn-filter {
+  @extend .btn;
+  background-color: $orange-light;
+  color: $text-dark;
+  border-radius: $radius-filter;
+  padding: 8px 20px;
+
+  &:hover {
+    background-color: $secondary-orange;
+  }
+
+  &.active {
+    background-color: $primary-orange;
+  }
+}
+
+.btn-tertiary {
+  @extend .btn;
+  background-color: transparent;
+  color: $text-light;
+  border-radius: 0;
+  padding: 8px 12px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
