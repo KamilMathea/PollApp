@@ -23,9 +23,36 @@
   color: $text-dark;
   border-radius: $radius-button;
   padding: 12px 24px;
+  position: relative;
+
+  &::after {
+    content: '+';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid $text-dark;
+    background-color: $primary-orange;
+    color: $text-dark;
+    opacity: 0;
+    max-width: 0;
+    margin-left: 0;
+    transform: scale(0.5);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
   &:hover {
     background-color: $primary-orange;
+
+    &::after {
+      opacity: 1;
+      max-width: 20px;
+      margin-left: 10px;
+      color: $text-dark;
+      transform: scale(1);
+    }
   }
 }
 
