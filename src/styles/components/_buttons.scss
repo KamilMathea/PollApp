@@ -73,7 +73,8 @@
   background-color: $orange-light;
   color: $text-dark;
   border-radius: $radius-filter;
-  padding: 8px 20px;
+  font-weight: 400;
+  padding: 4px 8px;
 
   &:hover {
     background-color: $secondary-orange;

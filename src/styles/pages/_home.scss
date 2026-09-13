@@ -114,3 +114,149 @@
         flex: initial;
     }
 }
+
+.all-surveys {
+    padding: 0 16px 40px;
+
+    &__toolbar {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    &__status-filters {
+        display: flex;
+        gap: 12px;
+    }
+
+    &__sort {
+        display: flex;
+        align-items: center;
+    }
+
+    &__select-wrapper {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    &__select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: transparent;
+        // Weißes Inline-SVG für die Pfeilspitze
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0 center;
+        border: none;
+        color: $text-light;
+        font-family: $font-body;
+        font-size: 0.95rem;
+        padding-right: 24px; // Platz für die Pfeilspitze
+        cursor: pointer;
+        outline: none;
+
+        option {
+            background-color: $primary-purple;
+            color: $text-light;
+        }
+    }
+
+    // Scrollbarer Bereich
+    &__grid-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-height: 520px;
+        overflow-y: auto;
+        padding-right: 8px;
+
+        // Firefox Scrollbar
+        scrollbar-width: thin;
+        scrollbar-color: $primary-orange transparent;
+
+        // Webkit Scrollbar (Chrome, Safari, Edge)
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: $primary-orange;
+            border-radius: 4px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        padding: 0 64px 60px;
+
+        &__toolbar {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        &__grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+    }
+}
+
+// Dunkle Umfrage-Karten
+.survey-card-dark {
+    background-color: $bg-card-dark;
+    border-radius: 0 80px 0 0;
+    padding: 16px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    border: none;
+    cursor: pointer;
+    font-family: $font-body;
+    transition: background-color 0.2s ease-in-out;
+    width: 100%;
+
+    &__category {
+        color: $secondary-orange;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    &__title {
+        color: $text-light;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        display: block;
+    }
+
+    &__expiry {
+        margin-top: auto;
+        margin-left: auto; // Expiry-Badge unten rechts platziert
+        font-size: 0.875rem;
+        font-weight: 500;
+        background-color: $secondary-orange;
+        color: $text-dark;
+        border-radius: 0 14px 0 0;
+        padding: 8px 16px;
+        display: inline-block;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    &:hover {
+        background-color: $bg-card-dark-hover;
+
+        .survey-card-dark__expiry {
+            background-color: $primary-orange;
+        }
+    }
+}
