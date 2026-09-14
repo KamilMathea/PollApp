@@ -66,14 +66,24 @@
     </div>
 
     <div class="all-surveys__sort">
-      <div class="all-surveys__select-wrapper">
-        <select id="category-select" class="all-surveys__select">
-          <option value="" disabled selected hidden>Sort by categories</option>
-          <option value="all">All Categories</option>
-          <option value="workplace">Workplace</option>
-          <option value="event">Event</option>
-          <option value="culture">Culture</option>
-        </select>
+      <button type="button" class="all-surveys__custom-select" [class.is-open]="isOpen()"
+        [class.has-selection]="selectedCategory() !== ''" (click)="toggleDropdown()">
+
+        <span class="all-surveys__trigger-text">Sort by categories</span>
+
+        @if (isOpen()) {
+        <ul class="all-surveys__dropdown-list">
+          @for (category of categories; track category) {
+          <li class="all-surveys__dropdown-item" (click)="selectCategory(category, $event)">
+            {{ category }}
+          </li>
+          }
+        </ul>
+        }
+      </button>
+
+      <div class="all-surveys__selected-category">
+        {{ selectedCategory() }}
       </div>
     </div>
   </div>

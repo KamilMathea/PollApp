@@ -132,38 +132,102 @@
 
     &__sort {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    &__select-wrapper {
+    &__custom-select {
+        position: relative;
         display: inline-flex;
         align-items: center;
-    }
-
-    &__select {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background-color: transparent;
-        // Weißes Inline-SVG für die Pfeilspitze
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 0 center;
         border: none;
-        color: $text-light;
-        font-family: $font-body;
-        font-size: 0.95rem;
-        padding-right: 24px; // Platz für die Pfeilspitze
+        background: transparent;
+        border-radius: 6px;
+        padding: 6px 32px 6px 12px;
         cursor: pointer;
         outline: none;
+        transition: background-color 0.2s ease-in-out;
 
-        option {
-            background-color: $primary-purple;
-            color: $text-light;
+        &::after {
+            content: '';
+            position: absolute;
+            right: 12px;
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+            background-color: $text-light;
+            -webkit-mask: url('/assets/images/arrow_drop_down.svg') no-repeat center / contain;
+            mask: url('/assets/images/arrow_drop_down.svg') no-repeat center / contain;
+            transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+        }
+
+        &:hover {
+            background-color: $bg-dropdown-hover;
+        }
+
+        &.has-selection::after {
+            background-color: $primary-orange;
+            transform: rotate(0deg);
+        }
+
+        &.is-open {
+            background-color: $bg-dropdown-hover;
+
+            &::after {
+                background-color: $primary-orange;
+                transform: rotate(180deg);
+            }
         }
     }
 
-    // Scrollbarer Bereich
+    &__trigger-text {
+        color: $text-light;
+        font-family: $font-body;
+        font-weight: 700;
+        font-size: 1.15rem;
+        padding: 0 12px 0 0;
+        white-space: nowrap;
+    }
+
+    &__dropdown-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 4px;
+        padding: 8px 0;
+        list-style: none;
+        background-color: $text-light;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 10;
+        min-width: 100%;
+        white-space: nowrap;
+    }
+
+    &__dropdown-item {
+        padding: 8px 16px;
+        color: $text-dark;
+        font-family: $font-body;
+        font-size: 0.95rem;
+        font-weight: 500;
+        text-align: left;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.08);
+        }
+    }
+
+    &__selected-category {
+        min-height: 20px;
+        margin-top: 6px;
+        padding-left: 12px;
+        color: $primary-orange;
+        font-family: $font-body;
+        font-size: 0.9rem;
+    }
+
     &__grid-container {
         display: flex;
         flex-direction: column;
@@ -172,11 +236,9 @@
         overflow-y: auto;
         padding-right: 8px;
 
-        // Firefox Scrollbar
         scrollbar-width: thin;
         scrollbar-color: $primary-orange transparent;
 
-        // Webkit Scrollbar (Chrome, Safari, Edge)
         &::-webkit-scrollbar {
             width: 6px;
         }
@@ -197,7 +259,16 @@
         &__toolbar {
             flex-direction: row;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+        }
+
+        &__sort {
+            align-items: flex-start;
+        }
+
+        &__dropdown-list {
+            left: 0;
+            right: auto;
         }
 
         &__grid-container {
@@ -208,7 +279,6 @@
     }
 }
 
-// Dunkle Umfrage-Karten
 .survey-card-dark {
     background-color: $bg-card-dark;
     border-radius: 0 80px 0 0;
@@ -241,7 +311,7 @@
 
     &__expiry {
         margin-top: auto;
-        margin-left: auto; // Expiry-Badge unten rechts platziert
+        margin-left: auto;
         font-size: 0.875rem;
         font-weight: 500;
         background-color: $secondary-orange;

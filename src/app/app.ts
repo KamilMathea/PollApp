@@ -9,4 +9,26 @@ import { RouterOutlet } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('PollApp');
+  protected readonly isOpen = signal(false);
+  protected readonly selectedCategory = signal('');
+
+  protected readonly categories = [
+    'All Surveys',
+    'Team Activities',
+    'Health & Wellness',
+    'Gaming & Entertainment',
+    'Education & Learning',
+    'Lifestyle & Preferences',
+    'Technology & Innovation',
+  ];
+
+  protected toggleDropdown(): void {
+    this.isOpen.update((value) => !value);
+  }
+
+  protected selectCategory(category: string, event: Event): void {
+    event.stopPropagation();
+    this.selectedCategory.set(category);
+    this.isOpen.set(false);
+  }
 }
