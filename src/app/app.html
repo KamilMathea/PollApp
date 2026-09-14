@@ -18,7 +18,7 @@
         audience, and turn feedback into action.
       </p>
 
-      <button type="button" class="btn-primary hero__btn">
+      <button type="button" class="btn-primary hero__btn" (click)="openModal()">
         New survey
       </button>
     </div>
@@ -66,21 +66,24 @@
     </div>
 
     <div class="all-surveys__sort">
-      <button type="button" class="all-surveys__custom-select" [class.is-open]="isOpen()"
-        [class.has-selection]="selectedCategory() !== ''" (click)="toggleDropdown()">
+      <div class="custom-dropdown" [class.is-open]="isOpen()" [class.has-selection]="selectedCategory() !== ''">
 
-        <span class="all-surveys__trigger-text">Sort by categories</span>
+        <button type="button" class="custom-dropdown__select" (click)="toggleDropdown()">
+          <span class="custom-dropdown__trigger-text">
+            Sort by categories
+          </span>
+        </button>
 
         @if (isOpen()) {
-        <ul class="all-surveys__dropdown-list">
+        <ul class="custom-dropdown__dropdown-list">
           @for (category of categories; track category) {
-          <li class="all-surveys__dropdown-item" (click)="selectCategory(category, $event)">
+          <li class="custom-dropdown__dropdown-item" (click)="selectCategory(category, $event)">
             {{ category }}
           </li>
           }
         </ul>
         }
-      </button>
+      </div>
 
       <div class="all-surveys__selected-category">
         {{ selectedCategory() }}
@@ -138,3 +141,177 @@
     </button>
   </div>
 </section>
+
+<!-- Native Dialog Overlay -->
+<dialog #surveyModal class="modal-dialog">
+  <div class="modal-dialog__container">
+
+    <!-- Mobil: Logo oben links -->
+    <div class="modal-dialog__mobile-logo">
+      <img src="/assets/images/Logo_dark.svg" alt="PollApp Logo" />
+    </div>
+
+    <!-- Hauptkarte (Primary Purple, border-radius oben rechts: 100px) -->
+    <div class="modal-card">
+
+      <!-- Top Header Area -->
+      <div class="modal-card__header">
+        <div class="modal-card__badge">Draft</div>
+
+        <div class="modal-card__title-row">
+          <h2 class="modal-card__title">Create new survey</h2>
+
+          <button type="button" class="btn-cancel" aria-label="Modal schließen" (click)="closeModal()">
+            <span class="btn-cancel__text">Cancel</span>
+            <span class="btn-cancel__icon">&times;</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Formularkarte (rgba(142, 112, 153, 0.16), border-radius oben rechts: 80px) -->
+      <form class="survey-form">
+
+        <!-- Oben Links -->
+        <div class="survey-form__section survey-form__section--top-left">
+
+          <!-- Survey Name -->
+          <div class="form-group">
+            <label for="surveyName">Survey name</label>
+            <div class="input-with-action">
+              <input type="text" id="surveyName" class="form-control" required />
+              <button type="button" class="btn-trash" aria-label="Survey name löschen">
+                <img src="/assets/images/Trash.svg" alt="Delete" />
+              </button>
+            </div>
+          </div>
+
+          <!-- End Date & Dropdown in einer Reihe -->
+          <div class="survey-form__row">
+
+            <div class="form-group form-group--half">
+              <label for="endDate">Set end date (optional)</label>
+              <div class="input-with-action">
+                <input type="date" id="endDate" class="form-control" />
+                <button type="button" class="btn-trash" aria-label="Enddatum löschen">
+                  <img src="/assets/images/Trash.svg" alt="Delete" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Custom Dropdown auf Höhe des Labels (align-self: flex-start) -->
+            <div class="form-group form-group--half form-group--dropdown">
+              <div class="custom-dropdown" [class.is-open]="isDropdownOpen()"
+                [class.has-selection]="selectedModalCategory()">
+                <button type="button" class="custom-dropdown__select" (click)="toggleModalDropdown()">
+                  <span class="custom-dropdown__trigger-text">
+                    {{ selectedModalCategory() || 'Choose category' }}
+                  </span>
+                </button>
+
+                @if (isDropdownOpen()) {
+                <ul class="custom-dropdown__dropdown-list">
+                  @for (category of categories; track category) {
+                  <li class="custom-dropdown__dropdown-item" (click)="selectModalCategory(category)">
+                    {{ category }}
+                  </li>
+                  }
+                </ul>
+                }
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Oben Rechts -->
+        <div class="survey-form__section survey-form__section--top-right">
+          <div class="form-group form-group--full-height">
+            <div class="form-group__label-row">
+              <label for="description">Describing text (optional)</label>
+              <button type="button" class="btn-trash" aria-label="Beschreibung löschen">
+                <img src="/assets/images/Trash.svg" alt="Delete" />
+              </button>
+            </div>
+            <textarea id="description" class="form-control form-control--textarea"></textarea>
+          </div>
+        </div>
+
+        <!-- Unten Links -->
+        <div class="survey-form__section survey-form__section--bottom-left">
+
+          <div class="form-group">
+            <div class="form-group__label-row">
+              <label for="question1">1. Question</label>
+              <button type="button" class="btn-trash" aria-label="Frage löschen">
+                <img src="/assets/images/Trash.svg" alt="Delete" />
+              </button>
+            </div>
+            <input type="text" id="question1" class="form-control" required />
+          </div>
+
+          <div class="answers-header">
+            <span class="answers-header__label">Answers</span>
+            <label class="checkbox-control">
+              <input type="checkbox" id="allowMultiple" />
+              <span>Allow multiple answers.</span>
+            </label>
+          </div>
+
+          <!-- Answer A -->
+          <div class="answer-option">
+            <div class="answer-option__header">
+              <span class="answer-option__prefix">A.</span>
+              <button type="button" class="btn-trash btn-trash--mobile-header" aria-label="Antwort A löschen">
+                <img src="/assets/images/Trash.svg" alt="Delete" />
+              </button>
+            </div>
+            <div class="answer-option__field">
+              <input type="text" class="form-control" required />
+              <button type="button" class="btn-trash btn-trash--desktop-inline" aria-label="Antwort A löschen">
+                <img src="/assets/images/Trash.svg" alt="Delete" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Answer B -->
+          <div class="answer-option">
+            <div class="answer-option__header">
+              <span class="answer-option__prefix">B.</span>
+              <button type="button" class="btn-trash btn-trash--mobile-header" aria-label="Antwort B löschen">
+                <img src="/assets/images/Trash.svg" alt="Delete" />
+              </button>
+            </div>
+            <div class="answer-option__field">
+              <input type="text" class="form-control" required />
+              <button type="button" class="btn-trash btn-trash--desktop-inline" aria-label="Antwort B löschen">
+                <img src="/assets/images/Trash.svg" alt="Delete" />
+              </button>
+            </div>
+          </div>
+
+          <button type="button" class="btn-add-answer">
+            <span>Add answer</span>
+            <span class="btn-add-answer__icon">+</span>
+          </button>
+        </div>
+
+        <!-- Unten Rechts -->
+        <div class="survey-form__section survey-form__section--bottom-right">
+          <button type="button" class="btn-add-next-question">
+            <span>Add next question</span>
+            <span class="btn-add-next-question__icon">+</span>
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Footer / Publish Button (Desktop: Rechtsbündig, Mobil: Zentriert) -->
+      <div class="modal-card__footer">
+        <button type="submit" class="btn-primary btn-publish">
+          Publish
+        </button>
+      </div>
+
+    </div>
+  </div>
+</dialog>

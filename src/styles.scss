@@ -12,9 +12,11 @@
 @forward 'styles/layout/header';
 @forward 'styles/layout/grid';
 
-// 5. Components (Buttons, Cards)
+// 5. Components (Buttons, Cards, Dropdown, Modal)
 @forward 'styles/components/buttons';
 @forward 'styles/components/cards';
+@forward 'styles/components/dropdown';
+@forward 'styles/components/modal';
 
 // 6. Pages (Einzelseiten-Styles)
 @forward 'styles/pages/home';

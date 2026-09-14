@@ -1,0 +1,92 @@
+@use '../abstracts/variables' as *;
+
+.custom-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+
+    &__select {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        border: none;
+        background: transparent;
+        border-radius: 6px;
+        padding: 6px 32px 6px 12px;
+        cursor: pointer;
+        outline: none;
+        transition: background-color 0.2s ease-in-out;
+        width: 100%;
+        box-sizing: border-box;
+
+        &::after {
+            content: '';
+            position: absolute;
+            right: 12px;
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+            background-color: $text-light;
+            -webkit-mask: url('/assets/images/arrow_drop_down.svg') no-repeat center / contain;
+            mask: url('/assets/images/arrow_drop_down.svg') no-repeat center / contain;
+            transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+        }
+
+        &:hover {
+            background-color: $bg-dropdown-hover;
+        }
+    }
+
+    &.has-selection &__select::after {
+        background-color: $primary-orange;
+        transform: rotate(0deg);
+    }
+
+    &.is-open &__select {
+        background-color: $bg-dropdown-hover;
+
+        &::after {
+            background-color: $primary-orange;
+            transform: rotate(180deg);
+        }
+    }
+
+    &__trigger-text {
+        color: $text-light;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 1.15rem;
+        padding: 0 12px 0 0;
+        white-space: nowrap;
+    }
+
+    &__dropdown-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 4px;
+        padding: 8px 0;
+        list-style: none;
+        background-color: $text-light;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 10;
+        min-width: 100%;
+        white-space: nowrap;
+    }
+
+    &__dropdown-item {
+        padding: 8px 16px;
+        color: $text-dark;
+        font-family: inherit;
+        font-size: 0.95rem;
+        font-weight: 500;
+        text-align: left;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.08);
+        }
+    }
+}
