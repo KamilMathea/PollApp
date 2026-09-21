@@ -44,4 +44,23 @@ export class SupabaseService {
     if (error) console.error('Error fetching polls:', error);
     return (data as Poll[]) || [];
   }
+
+  /**
+ * Creates a new poll entry in the Supabase database.
+ * 
+ * @param pollData - The poll payload containing title, description, category ID, and expiration date.
+ * @returns A promise resolving to the created poll data or null if the insertion failed.
+ */
+  async createPoll(pollData: { title: string; description: string | null; category_id: number | null; expires_at: string | null }) {
+    const { data, error } = await this.supabase
+      .from('polls')
+      .insert([pollData])
+      .select();
+
+    if (error) {
+      console.error('Fehler beim Erstellen der Umfrage:', error.message);
+      return null;
+    }
+    return data;
+  }
 }
