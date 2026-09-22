@@ -38,39 +38,36 @@
   </div>
 
   <div class="ending-soon__cards-container">
+    @for (poll of endingSoonPolls(); track poll.id) {
     <button type="button" class="survey-card">
-      <span class="survey-card__category">survey category</span>
-      <span class="survey-card__title">survey title</span>
-      <span class="survey-card__expiry">Ends in</span>
+      <span class="survey-card__category">{{ poll.category?.name || 'General' }}</span>
+      <span class="survey-card__title">{{ poll.title }}</span>
+      <span class="survey-card__expiry">{{ formatRemainingTime(poll.expires_at) }}</span>
     </button>
-
-    <button type="button" class="survey-card">
-      <span class="survey-card__category">survey category</span>
-      <span class="survey-card__title">survey title</span>
-      <span class="survey-card__expiry">Ends in</span>
-    </button>
-
-    <button type="button" class="survey-card">
-      <span class="survey-card__category">survey category</span>
-      <span class="survey-card__title">survey title</span>
-      <span class="survey-card__expiry">Ends in</span>
-    </button>
+    } @empty {
+    <p>No surveys ending soon.</p>
+    }
   </div>
 </section>
 
 <section class="all-surveys">
   <div class="all-surveys__toolbar">
     <div class="all-surveys__status-filters">
-      <button type="button" class="btn-filter active">Active survey</button>
-      <button type="button" class="btn-filter">Past survey</button>
+      <button type="button" class="btn-filter" [class.active]="activeTab() === 'active'" (click)="setTab('active')">
+        Active survey
+      </button>
+      <button type="button" class="btn-filter" [class.active]="activeTab() === 'past'" (click)="setTab('past')">
+        Past survey
+      </button>
     </div>
 
     <div class="all-surveys__sort">
-      <div class="custom-dropdown" [class.is-open]="isOpen()" [class.has-selection]="selectedCategory() !== ''">
+      <div class="custom-dropdown" [class.is-open]="isOpen()"
+        [class.has-selection]="selectedCategory() !== 'All Surveys'">
 
         <button type="button" class="custom-dropdown__select" (click)="toggleDropdown()">
           <span class="custom-dropdown__trigger-text">
-            Sort by categories
+            {{ selectedCategory() || 'Sort by categories' }}
           </span>
         </button>
 
@@ -84,61 +81,19 @@
         </ul>
         }
       </div>
-
-      <div class="all-surveys__selected-category">
-        {{ selectedCategory() }}
-      </div>
     </div>
   </div>
 
   <div class="all-surveys__grid-container">
+    @for (poll of filteredPolls(); track poll.id) {
     <button type="button" class="survey-card-dark">
-      <span class="survey-card-dark__category">survey category</span>
-      <span class="survey-card-dark__title">survey title</span>
-      <span class="survey-card-dark__expiry">Ends in</span>
+      <span class="survey-card-dark__category">{{ poll.category?.name || 'General' }}</span>
+      <span class="survey-card-dark__title">{{ poll.title }}</span>
+      <span class="survey-card-dark__expiry">{{ formatRemainingTime(poll.expires_at) }}</span>
     </button>
-
-    <button type="button" class="survey-card-dark">
-      <span class="survey-card-dark__category">survey category</span>
-      <span class="survey-card-dark__title">survey title</span>
-      <span class="survey-card-dark__expiry">Ends in</span>
-    </button>
-
-    <button type="button" class="survey-card-dark">
-      <span class="survey-card-dark__category">survey category</span>
-      <span class="survey-card-dark__title">survey title</span>
-      <span class="survey-card-dark__expiry">Ends in</span>
-    </button>
-
-    <button type="button" class="survey-card-dark">
-      <span class="survey-card-dark__category">survey category</span>
-      <span class="survey-card-dark__title">survey title</span>
-      <span class="survey-card-dark__expiry">Ends in</span>
-    </button>
-
-    <button type="button" class="survey-card-dark">
-      <span class="survey-card-dark__category">survey category</span>
-      <span class="survey-card-dark__title">survey title</span>
-      <span class="survey-card-dark__expiry">Ends in</span>
-    </button>
-
-    <button type="button" class="survey-card-dark">
-      <span class="survey-card-dark__category">survey category</span>
-      <span class="survey-card-dark__title">survey title</span>
-      <span class="survey-card-dark__expiry">Ends in</span>
-    </button>
-
-    <button type="button" class="survey-card-dark">
-      <span class="survey-card-dark__category">survey category</span>
-      <span class="survey-card-dark__title">survey title</span>
-      <span class="survey-card-dark__expiry">Ends in</span>
-    </button>
-
-    <button type="button" class="survey-card-dark">
-      <span class="survey-card-dark__category">survey category</span>
-      <span class="survey-card-dark__title">survey title</span>
-      <span class="survey-card-dark__expiry">Ends in</span>
-    </button>
+    } @empty {
+    <p>No surveys found for this filter.</p>
+    }
   </div>
 </section>
 

@@ -1,22 +1,26 @@
-import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, computed, inject, OnInit, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
+import { Poll } from './interfaces/poll.interface';
 import { SupabaseService } from './services/supabase';
 
 @Component({
-  imports: [RouterOutlet, FormsModule],
+  imports: [RouterOutlet, FormsModule, DatePipe],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',
 })
-export class App {
-  private supabaseService: SupabaseService = inject(SupabaseService);
+export class App implements OnInit {
+  private readonly supabaseService: SupabaseService = inject(SupabaseService);
 
   @ViewChild('surveyModal') private surveyModal!: ElementRef<HTMLDialogElement>;
 
   protected readonly title = signal('PollApp');
   protected readonly isOpen = signal(false);
-  protected readonly selectedCategory = signal('');
+  protected readonly selectedCategory = signal('All Surveys');
+  protected readonly activeTab = signal<'active' | 'past'>('active');
+  protected readonly polls = signal<Poll[]>([]);
   protected readonly isDropdownOpen = signal(false);
   protected readonly selectedModalCategory = signal('');
   protected readonly surveyTitle = signal('');
@@ -33,8 +37,43 @@ export class App {
     'Technology & Innovation',
   ];
 
+  async ngOnInit(): Promise<void> {
+    await this.loadPolls();
+  }
+
+  protected async loadPolls(): Promise<void> {
+    const data = await this.supabaseService.getPolls();
+    this.polls.set(data);
+  }
+
+  protected readonly endingSoonPolls = computed(() => {
+    const now = new Date().getTime();
+    return this.polls()
+      .filter((p) => p.expires_at && new Date(p.expires_at).getTime() > now)
+      .sort((a, b) => new Date(a.expires_at!).getTime() - new Date(b.expires_at!).getTime())
+      .slice(0, 3);
+  });
+
+  protected readonly filteredPolls = computed(() => {
+    const now = new Date().getTime();
+    const tab = this.activeTab();
+    const cat = this.selectedCategory();
+
+    return this.polls().filter((p) => {
+      const isExpired = p.expires_at ? new Date(p.expires_at).getTime() < now : false;
+      const matchesTab = tab === 'active' ? !isExpired : isExpired;
+      const matchesCat = cat === 'All Surveys' || cat === '' || p.category?.name === cat;
+
+      return matchesTab && matchesCat;
+    });
+  });
+
+  protected setTab(tab: 'active' | 'past'): void {
+    this.activeTab.set(tab);
+  }
+
   protected toggleDropdown(): void {
-    this.isOpen.update((value) => !value);
+    this.isOpen.update((v) => !v);
   }
 
   protected selectCategory(category: string, event: Event): void {
@@ -85,13 +124,14 @@ export class App {
     const result = await this.supabaseService.createPoll(payload);
 
     if (result) {
+      await this.loadPolls();
       this.closeModal();
     }
   }
 
   private buildPollPayload() {
     const categoryIndex = this.categories.indexOf(this.selectedModalCategory());
-    const categoryId = categoryIndex > -1 ? categoryIndex + 1 : null;
+    const categoryId = categoryIndex > 0 ? categoryIndex : null;
 
     return {
       title: this.surveyTitle(),
@@ -99,5 +139,17 @@ export class App {
       category_id: categoryId,
       expires_at: this.endDate() ? new Date(this.endDate()).toISOString() : null,
     };
+  }
+
+  protected formatRemainingTime(expiresAt?: string): string {
+    if (!expiresAt) return 'No deadline';
+    const diff = new Date(expiresAt).getTime() - new Date().getTime();
+    if (diff <= 0) return 'Ended';
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    if (days > 0) return `Ends in ${days} day${days > 1 ? 's' : ''}`;
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    return `Ends in ${hours} hour${hours > 1 ? 's' : ''}`;
   }
 }
