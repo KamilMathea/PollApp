@@ -73,9 +73,12 @@
 
         @if (isOpen()) {
         <ul class="custom-dropdown__dropdown-list">
-          @for (category of categories; track category) {
-          <li class="custom-dropdown__dropdown-item" (click)="selectCategory(category, $event)">
-            {{ category }}
+          <li class="custom-dropdown__dropdown-item" (click)="selectCategory('All Surveys', $event)">
+            All Surveys
+          </li>
+          @for (category of dbCategories(); track category.id) {
+          <li class="custom-dropdown__dropdown-item" (click)="selectCategory(category.name, $event)">
+            {{ category.name }}
           </li>
           }
         </ul>
@@ -149,18 +152,18 @@
 
             <div class="form-group form-group--half form-group--dropdown">
               <div class="custom-dropdown" [class.is-open]="isDropdownOpen()"
-                [class.has-selection]="selectedModalCategory()">
+                [class.has-selection]="selectedModalCategory() !== null">
                 <button type="button" class="custom-dropdown__select" (click)="toggleModalDropdown()">
                   <span class="custom-dropdown__trigger-text">
-                    {{ selectedModalCategory() || 'Choose category' }}
+                    {{ selectedModalCategory()?.name || 'Choose category' }}
                   </span>
                 </button>
 
                 @if (isDropdownOpen()) {
                 <ul class="custom-dropdown__dropdown-list">
-                  @for (category of categories; track category) {
+                  @for (category of dbCategories(); track category.id) {
                   <li class="custom-dropdown__dropdown-item" (click)="selectModalCategory(category)">
-                    {{ category }}
+                    {{ category.name }}
                   </li>
                   }
                 </ul>

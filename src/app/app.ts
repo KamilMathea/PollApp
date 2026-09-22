@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild, computed, inject, OnInit, signal } fr
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
-import { Poll } from './interfaces/poll.interface';
+import { Category, Poll } from './interfaces/poll.interface';
 import { SupabaseService } from './services/supabase';
 
 @Component({
@@ -21,24 +21,23 @@ export class App implements OnInit {
   protected readonly selectedCategory = signal('All Surveys');
   protected readonly activeTab = signal<'active' | 'past'>('active');
   protected readonly polls = signal<Poll[]>([]);
+  protected readonly dbCategories = signal<Category[]>([]);
   protected readonly isDropdownOpen = signal(false);
-  protected readonly selectedModalCategory = signal('');
+  protected readonly selectedModalCategory = signal<Category | null>(null);
   protected readonly surveyTitle = signal('');
   protected readonly endDate = signal('');
   protected readonly description = signal('');
 
-  protected readonly categories = [
-    'All Surveys',
-    'Team Activities',
-    'Health & Wellness',
-    'Gaming & Entertainment',
-    'Education & Learning',
-    'Lifestyle & Preferences',
-    'Technology & Innovation',
-  ];
-
   async ngOnInit(): Promise<void> {
-    await this.loadPolls();
+    await Promise.all([
+      this.loadCategories(),
+      this.loadPolls()
+    ]);
+  }
+
+  protected async loadCategories(): Promise<void> {
+    const data = await this.supabaseService.getCategories();
+    this.dbCategories.set(data);
   }
 
   protected async loadPolls(): Promise<void> {
@@ -76,9 +75,9 @@ export class App implements OnInit {
     this.isOpen.update((v) => !v);
   }
 
-  protected selectCategory(category: string, event: Event): void {
+  protected selectCategory(categoryName: string, event: Event): void {
     event.stopPropagation();
-    this.selectedCategory.set(category);
+    this.selectedCategory.set(categoryName);
     this.isOpen.set(false);
   }
 
@@ -95,7 +94,7 @@ export class App implements OnInit {
     this.isDropdownOpen.update((v) => !v);
   }
 
-  protected selectModalCategory(category: string): void {
+  protected selectModalCategory(category: Category): void {
     this.selectedModalCategory.set(category);
     this.isDropdownOpen.set(false);
   }
@@ -116,7 +115,7 @@ export class App implements OnInit {
     this.surveyTitle.set('');
     this.endDate.set('');
     this.description.set('');
-    this.selectedModalCategory.set('');
+    this.selectedModalCategory.set(null);
   }
 
   protected async onSubmitPoll(): Promise<void> {
@@ -130,13 +129,12 @@ export class App implements OnInit {
   }
 
   private buildPollPayload() {
-    const categoryIndex = this.categories.indexOf(this.selectedModalCategory());
-    const categoryId = categoryIndex > 0 ? categoryIndex : null;
+    const selectedCat = this.selectedModalCategory();
 
     return {
       title: this.surveyTitle(),
       description: this.description() || null,
-      category_id: categoryId,
+      category_id: selectedCat ? selectedCat.id : null,
       expires_at: this.endDate() ? new Date(this.endDate()).toISOString() : null,
     };
   }
