@@ -15,6 +15,7 @@ export class App implements OnInit {
   private readonly supabaseService: SupabaseService = inject(SupabaseService);
 
   @ViewChild('surveyModal') private surveyModal!: ElementRef<HTMLDialogElement>;
+  @ViewChild('surveyDetailModal') private surveyDetailModal!: ElementRef<HTMLDialogElement>;
 
   protected readonly title = signal('PollApp');
   protected readonly isOpen = signal(false);
@@ -27,6 +28,9 @@ export class App implements OnInit {
   protected readonly surveyTitle = signal('');
   protected readonly endDate = signal('');
   protected readonly description = signal('');
+  protected readonly selectedPoll = signal<Poll | null>(null);
+  protected readonly hasVoted = signal<boolean>(false);
+  protected isMultipleChoice: boolean = false; // Vorübergehend als Flag
 
   async ngOnInit(): Promise<void> {
     await Promise.all([
@@ -149,5 +153,20 @@ export class App implements OnInit {
 
     const hours = Math.floor(diff / (1000 * 60 * 60));
     return `Ends in ${hours} hour${hours > 1 ? 's' : ''}`;
+  }
+
+  protected openSurveyDetail(poll: Poll): void {
+    this.selectedPoll.set(poll);
+    this.hasVoted.set(false); // Vorübergehend als Fallback
+    this.surveyDetailModal.nativeElement.showModal();
+  }
+
+  protected closeSurveyDetail(): void {
+    this.surveyDetailModal.nativeElement.close();
+  }
+
+  protected submitVote(): void {
+    // Hier kommt später der Aufruf für Supabase hin
+    this.closeSurveyDetail();
   }
 }

@@ -39,7 +39,7 @@
 
   <div class="ending-soon__cards-container">
     @for (poll of endingSoonPolls(); track poll.id) {
-    <button type="button" class="survey-card">
+    <button type="button" class="survey-card" (click)="openSurveyDetail(poll)">
       <span class="survey-card__category">{{ poll.category?.name || 'General' }}</span>
       <span class="survey-card__title">{{ poll.title }}</span>
       <span class="survey-card__expiry">{{ formatRemainingTime(poll.expires_at) }}</span>
@@ -89,7 +89,7 @@
 
   <div class="all-surveys__grid-container">
     @for (poll of filteredPolls(); track poll.id) {
-    <button type="button" class="survey-card-dark">
+    <button type="button" class="survey-card-dark" (click)="openSurveyDetail(poll)">
       <span class="survey-card-dark__category">{{ poll.category?.name || 'General' }}</span>
       <span class="survey-card-dark__title">{{ poll.title }}</span>
       <span class="survey-card-dark__expiry">{{ formatRemainingTime(poll.expires_at) }}</span>
@@ -264,6 +264,97 @@
         <button type="button" class="btn-primary btn-publish" (click)="onSubmitPoll()">
           Publish
         </button>
+      </div>
+
+    </div>
+  </div>
+</dialog>
+
+<dialog #surveyDetailModal class="modal-dialog">
+  <div class="modal-dialog__container">
+
+    <div class="modal-detail-header">
+      <img src="/assets/images/Logo_dark.svg" alt="PollApp Logo" class="modal-detail-header__logo" />
+      <button type="button" class="btn-primary" (click)="openModal()">
+        Create survey
+      </button>
+    </div>
+
+    <div class="survey-detail">
+
+      <div class="survey-detail__left">
+        <div class="survey-detail__badge">Published</div>
+
+        <div class="survey-detail__meta">
+          <span class="survey-detail__date">Ends on {{ selectedPoll()?.expires_at | date:'dd.MM.yyyy' }}</span>
+          <span class="survey-detail__category">Category: {{ selectedPoll()?.category?.name || 'General' }}</span>
+        </div>
+
+        <h2 class="survey-detail__title">{{ selectedPoll()?.title }}</h2>
+        <p class="survey-detail__description">{{ selectedPoll()?.description }}</p>
+
+        <div class="survey-detail__questions">
+          <div class="question-block">
+            <h3 class="question-block__title">Welche Programmiersprache bevorzugst du?</h3>
+
+            @if (isMultipleChoice) {
+            <p class="question-block__hint">More than one answers are possible.</p>
+            }
+
+            <div class="question-block__options">
+              <label class="checkbox-option">
+                <input type="checkbox" name="poll-option" />
+                <span>Option A</span>
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="poll-option" />
+                <span>Option B</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="survey-detail__footer">
+          <button type="button" class="btn-complete-survey" (click)="submitVote()">
+            Complete survey
+          </button>
+        </div>
+      </div>
+
+      <div class="survey-detail__right">
+        <h3 class="survey-detail__results-title">
+          Survey results <span class="highlight-live">LIVE</span>
+        </h3>
+
+        @if (!hasVoted()) {
+        <div class="results-empty">
+          <p class="results-empty__sub">Results will be shown here after participants complete the survey.</p>
+          <p class="results-empty__main">There are no answers yet.</p>
+        </div>
+        }
+        @else {
+        <div class="results-list">
+          <div class="results-item">
+            <p class="results-item__question">Welche Programmiersprache bevorzugst du?</p>
+
+            <div class="results-item__option">
+              <span class="results-item__label">Option A</span>
+              <div class="progress-bar">
+                <div class="progress-bar__fill" style="width: 60%;"></div>
+              </div>
+              <span class="results-item__percent">60%</span>
+            </div>
+
+            <div class="results-item__option">
+              <span class="results-item__label">Option B</span>
+              <div class="progress-bar">
+                <div class="progress-bar__fill" style="width: 40%;"></div>
+              </div>
+              <span class="results-item__percent">40%</span>
+            </div>
+          </div>
+        </div>
+        }
       </div>
 
     </div>
