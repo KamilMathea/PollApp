@@ -131,7 +131,7 @@
             <div class="input-with-action">
               <input type="text" id="surveyName" class="form-control" [ngModel]="surveyTitle()"
                 (ngModelChange)="updateTitle($event)" name="surveyName" required />
-              <button type="button" class="btn-trash" aria-label="Survey name löschen">
+              <button type="button" class="btn-trash" aria-label="Survey name löschen" (click)="updateTitle('')">
                 <img src="/assets/images/Trash.svg" alt="Delete" />
               </button>
             </div>
@@ -144,7 +144,7 @@
               <div class="input-with-action">
                 <input type="date" id="endDate" class="form-control" [ngModel]="endDate()"
                   (ngModelChange)="updateEndDate($event)" name="endDate" />
-                <button type="button" class="btn-trash" aria-label="Enddatum löschen">
+                <button type="button" class="btn-trash" aria-label="Enddatum löschen" (click)="updateEndDate('')">
                   <img src="/assets/images/Trash.svg" alt="Delete" />
                 </button>
               </div>
@@ -179,7 +179,8 @@
 
             <div class="form-group__label-row">
               <label for="description">Describing text (optional)</label>
-              <button type="button" class="btn-trash btn-trash--mobile-header" aria-label="Beschreibung löschen">
+              <button type="button" class="btn-trash btn-trash--mobile-header" aria-label="Beschreibung löschen"
+                (click)="updateDescription('')">
                 <img src="/assets/images/Trash.svg" alt="Delete" />
               </button>
             </div>
@@ -187,7 +188,8 @@
             <div class="input-with-action input-with-action--full-height">
               <textarea id="description" class="form-control form-control--textarea" [ngModel]="description()"
                 (ngModelChange)="updateDescription($event)" name="description"></textarea>
-              <button type="button" class="btn-trash btn-trash--desktop-inline" aria-label="Beschreibung löschen">
+              <button type="button" class="btn-trash btn-trash--desktop-inline" aria-label="Beschreibung löschen"
+                (click)="updateDescription('')">
                 <img src="/assets/images/Trash.svg" alt="Delete" />
               </button>
             </div>
@@ -200,52 +202,44 @@
           <div class="form-group">
             <div class="form-group__label-row">
               <label for="question1">1. Question</label>
-              <button type="button" class="btn-trash" aria-label="Frage löschen">
+              <button type="button" class="btn-trash" aria-label="Frage löschen" (click)="updateQuestionText('')">
                 <img src="/assets/images/Trash.svg" alt="Delete" />
               </button>
             </div>
-            <input type="text" id="question1" class="form-control" required />
+            <input type="text" id="question1" class="form-control" [ngModel]="questionText()"
+              (ngModelChange)="updateQuestionText($event)" name="questionText" required />
           </div>
 
           <div class="answers-header">
             <span class="answers-header__label">Answers</span>
             <label class="checkbox-control">
-              <input type="checkbox" id="allowMultiple" />
+              <input type="checkbox" id="allowMultiple" [ngModel]="allowMultiple()"
+                (ngModelChange)="updateAllowMultiple($event)" name="allowMultiple" />
               <span>Allow multiple answers.</span>
             </label>
           </div>
 
+          @for (option of answerOptions(); track $index) {
           <div class="answer-option">
             <div class="answer-option__header">
-              <span class="answer-option__prefix">A.</span>
-              <button type="button" class="btn-trash btn-trash--mobile-header" aria-label="Antwort A löschen">
+              <span class="answer-option__prefix">{{ $index + 1 }}.</span>
+              <button type="button" class="btn-trash btn-trash--mobile-header" aria-label="Antwort löschen"
+                (click)="removeAnswerOption($index)">
                 <img src="/assets/images/Trash.svg" alt="Delete" />
               </button>
             </div>
             <div class="answer-option__field">
-              <input type="text" class="form-control" required />
-              <button type="button" class="btn-trash btn-trash--desktop-inline" aria-label="Antwort A löschen">
+              <input type="text" class="form-control" [ngModel]="option"
+                (ngModelChange)="updateAnswerOption($index, $event)" [name]="'answerOption' + $index" required />
+              <button type="button" class="btn-trash btn-trash--desktop-inline" aria-label="Antwort löschen"
+                (click)="removeAnswerOption($index)">
                 <img src="/assets/images/Trash.svg" alt="Delete" />
               </button>
             </div>
           </div>
+          }
 
-          <div class="answer-option">
-            <div class="answer-option__header">
-              <span class="answer-option__prefix">B.</span>
-              <button type="button" class="btn-trash btn-trash--mobile-header" aria-label="Antwort B löschen">
-                <img src="/assets/images/Trash.svg" alt="Delete" />
-              </button>
-            </div>
-            <div class="answer-option__field">
-              <input type="text" class="form-control" required />
-              <button type="button" class="btn-trash btn-trash--desktop-inline" aria-label="Antwort B löschen">
-                <img src="/assets/images/Trash.svg" alt="Delete" />
-              </button>
-            </div>
-          </div>
-
-          <button type="button" class="btn-add-answer">
+          <button type="button" class="btn-add-answer" (click)="addAnswerOption()">
             <span>Add answer</span>
             <span class="btn-add-answer__icon">+</span>
           </button>
@@ -294,24 +288,24 @@
         <p class="survey-detail__description">{{ selectedPoll()?.description }}</p>
 
         <div class="survey-detail__questions">
+          @for (q of selectedPoll()?.questions; track q.id) {
           <div class="question-block">
-            <h3 class="question-block__title">Welche Programmiersprache bevorzugst du?</h3>
+            <h3 class="question-block__title">{{ q.question_text }}</h3>
 
-            @if (isMultipleChoice) {
-            <p class="question-block__hint">More than one answers are possible.</p>
+            @if (q.allow_multiple) {
+            <p class="question-block__hint">More than one answer is possible.</p>
             }
 
             <div class="question-block__options">
+              @for (opt of q.poll_options; track opt.id) {
               <label class="checkbox-option">
-                <input type="checkbox" name="poll-option" />
-                <span>Option A</span>
+                <input [type]="q.allow_multiple ? 'checkbox' : 'radio'" [name]="'poll-question-' + q.id" />
+                <span>{{ opt.option_text }}</span>
               </label>
-              <label class="checkbox-option">
-                <input type="checkbox" name="poll-option" />
-                <span>Option B</span>
-              </label>
+              }
             </div>
           </div>
+          }
         </div>
 
         <div class="survey-detail__footer">
@@ -334,25 +328,21 @@
         }
         @else {
         <div class="results-list">
+          @for (q of selectedPoll()?.questions; track q.id) {
           <div class="results-item">
-            <p class="results-item__question">Welche Programmiersprache bevorzugst du?</p>
+            <p class="results-item__question">{{ q.question_text }}</p>
 
+            @for (opt of q.poll_options; track opt.id) {
             <div class="results-item__option">
-              <span class="results-item__label">Option A</span>
+              <span class="results-item__label">{{ opt.option_text }}</span>
               <div class="progress-bar">
-                <div class="progress-bar__fill" style="width: 60%;"></div>
+                <div class="progress-bar__fill" style="width: 0%;"></div>
               </div>
-              <span class="results-item__percent">60%</span>
+              <span class="results-item__percent">0%</span>
             </div>
-
-            <div class="results-item__option">
-              <span class="results-item__label">Option B</span>
-              <div class="progress-bar">
-                <div class="progress-bar__fill" style="width: 40%;"></div>
-              </div>
-              <span class="results-item__percent">40%</span>
-            </div>
+            }
           </div>
+          }
         </div>
         }
       </div>
