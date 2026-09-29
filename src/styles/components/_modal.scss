@@ -295,6 +295,24 @@
     }
 }
 
+.add-answer-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 8px;
+
+    .btn-add-answer {
+        margin-top: 0;
+    }
+}
+
+.add-answer-hint {
+    font-size: 0.875rem;
+    color: $color-white-soft;
+    opacity: 0.8;
+}
+
 .btn-add-next-question {
     background-color: $orange-translucent;
     color: $color-white-soft;

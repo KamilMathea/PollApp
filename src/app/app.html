@@ -222,7 +222,7 @@
           @for (option of answerOptions(); track $index) {
           <div class="answer-option">
             <div class="answer-option__header">
-              <span class="answer-option__prefix">{{ $index + 1 }}.</span>
+              <span class="answer-option__prefix">{{ getLetterPrefix($index) }}</span>
               <button type="button" class="btn-trash btn-trash--mobile-header" aria-label="Antwort löschen"
                 (click)="removeAnswerOption($index)">
                 <img src="/assets/images/Trash.svg" alt="Delete" />
@@ -239,10 +239,17 @@
           </div>
           }
 
-          <button type="button" class="btn-add-answer" (click)="addAnswerOption()">
-            <span>Add answer</span>
-            <span class="btn-add-answer__icon">+</span>
-          </button>
+          <div class="add-answer-wrapper">
+            <button type="button" class="btn-add-answer" [disabled]="answerOptions().length >= 6"
+              (click)="addAnswerOption()">
+              <span>Add answer</span>
+              <span class="btn-add-answer__icon">+</span>
+            </button>
+
+            @if (showMaxAnswersHint()) {
+            <span class="add-answer-hint">You can add up to 6 answer fields.</span>
+            }
+          </div>
         </div>
 
         <div class="survey-form__section survey-form__section--bottom-right">

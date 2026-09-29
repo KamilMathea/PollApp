@@ -205,9 +205,24 @@ export class App implements OnInit {
   }
 
   /**
-   * Appends a new blank answer option.
+   * Converts a zero-based index into an uppercase alphabetical prefix (e.g. 0 -> 'A.', 1 -> 'B.').
+   *
+   * @param index - Zero-based index of the option.
+   * @returns Formatted letter prefix string.
+   */
+  protected getLetterPrefix(index: number): string {
+    return String.fromCharCode(65 + index) + '.';
+  }
+
+  protected readonly showMaxAnswersHint = signal<boolean>(false);
+
+  /**
+   * Appends a new blank answer option if the maximum limit of 6 is not reached.
+   * Activates the limit notice display upon interaction.
    */
   protected addAnswerOption(): void {
+    this.showMaxAnswersHint.set(true);
+    if (this.answerOptions().length >= 6) return;
     this.answerOptions.update((options) => [...options, '']);
   }
 
@@ -231,6 +246,7 @@ export class App implements OnInit {
     this.questionText.set('');
     this.allowMultiple.set(false);
     this.answerOptions.set(['', '']);
+    this.showMaxAnswersHint.set(false);
   }
 
   /**
