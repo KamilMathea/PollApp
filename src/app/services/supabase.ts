@@ -32,13 +32,13 @@ export class SupabaseService {
   }
 
   /**
-   * Fetches all polls including their linked category, nested questions, and options.
+   * Fetches all polls including category, questions, options, and option votes.
    * @returns A promise resolving to an array of polls.
    */
   async getPolls(): Promise<Poll[]> {
     const { data, error } = await this.supabase
       .from('polls')
-      .select('*, category:categories(*), questions:questions(*, poll_options(*))')
+      .select('*, category:categories(*), questions:questions(*, poll_options(*, votes(*)))')
       .order('created_at', { ascending: false });
 
     if (error) console.error('Error fetching polls:', error);
@@ -107,6 +107,20 @@ export class SupabaseService {
     const items = options.filter(o => o.trim()).map(o => ({ question_id: questionId, option_text: o }));
     if (!items.length) return true;
     const { error } = await this.supabase.from('poll_options').insert(items);
+    return !error;
+  }
+
+  /**
+   * Bulk-inserts a list of selected option IDs into the votes table.
+   *
+   * @param optionIds - Array of option IDs that were selected by the user.
+   * @returns Resolves to `true` if all votes were inserted successfully.
+   */
+  async submitVotes(optionIds: number[]): Promise<boolean> {
+    if (!optionIds.length) return true;
+    const payload = optionIds.map((id) => ({ option_id: id }));
+    const { error } = await this.supabase.from('votes').insert(payload);
+    if (error) console.error('Error submitting votes:', error);
     return !error;
   }
 }

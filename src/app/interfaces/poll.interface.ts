@@ -2,6 +2,7 @@ export interface PollOption {
   id?: number;
   question_id?: number;
   option_text: string;
+  votes?: Vote[];
 }
 
 export interface Question {

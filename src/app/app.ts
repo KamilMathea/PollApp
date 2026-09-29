@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild, computed, inject, OnInit, signal } fr
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
-import { Category, Poll } from './interfaces/poll.interface';
+import { Category, Poll, PollOption, Question } from './interfaces/poll.interface';
 import { SupabaseService } from './services/supabase';
 
 /**
@@ -289,6 +289,7 @@ export class App implements OnInit {
    * @param poll - Poll object clicked.
    */
   protected openSurveyDetail(poll: Poll): void {
+    this.selectedOptionIds.set([]);
     this.selectedPoll.set(poll);
     this.hasVoted.set(false);
     this.surveyDetailModal.nativeElement.showModal();
@@ -301,10 +302,76 @@ export class App implements OnInit {
     this.surveyDetailModal.nativeElement.close();
   }
 
+  protected readonly selectedOptionIds = signal<number[]>([]);
+
   /**
-   * Handles user vote completion.
+   * Toggles the selection state of an option ID for single or multiple choice.
+   * @param optionId - ID of the option toggled.
+   * @param allowMultiple - Whether multiple choices are allowed in the question.
+   * @param questionOptions - All options belonging to the question (used for single choice reset).
    */
-  protected submitVote(): void {
-    this.closeSurveyDetail();
+  protected toggleOptionSelection(optionId: number, allowMultiple: boolean, questionOptions: PollOption[]): void {
+    const current = this.selectedOptionIds();
+    if (allowMultiple) {
+      const updated = current.includes(optionId)
+        ? current.filter((id) => id !== optionId)
+        : [...current, optionId];
+      this.selectedOptionIds.set(updated);
+    } else {
+      const otherQuestionOptionIds = questionOptions.map((o) => o.id!).filter(Boolean);
+      const cleaned = current.filter((id) => !otherQuestionOptionIds.includes(id));
+      const updated = current.includes(optionId) ? cleaned : [...cleaned, optionId];
+      this.selectedOptionIds.set(updated);
+    }
+  }
+
+  /**
+   * Calculates total votes count for a specific question.
+   * @param question - Question object.
+   * @returns Total number of votes cast across all options of this question.
+   */
+  protected getQuestionTotalVotes(question: Question): number {
+    if (!question.poll_options) return 0;
+    return question.poll_options.reduce((sum, opt) => sum + (opt.votes?.length || 0), 0);
+  }
+
+  /**
+   * Calculates percentage of votes for a single option relative to its question.
+   * @param option - PollOption object.
+   * @param question - Parent Question object.
+   * @returns Formatted percentage string (e.g. "45%").
+   */
+  protected getOptionPercentage(option: PollOption, question: Question): string {
+    const total = this.getQuestionTotalVotes(question);
+    if (!total) return '0%';
+    const count = option.votes?.length || 0;
+    const percent = Math.round((count / total) * 100);
+    return `${percent}%`;
+  }
+
+  /**
+   * Handles user vote submission and refreshes poll data.
+   */
+  protected async submitVote(): Promise<void> {
+    const selected = this.selectedOptionIds();
+    if (selected.length > 0) {
+      const success = await this.supabaseService.submitVotes(selected);
+      if (success) {
+        await this.loadPolls();
+        this.updateSelectedPollState();
+      }
+    }
+    this.hasVoted.set(true);
+  }
+
+  /**
+   * Re-links the active selectedPoll signal reference after fresh loadPolls().
+   */
+  private updateSelectedPollState(): void {
+    const currentId = this.selectedPoll()?.id;
+    if (currentId) {
+      const updated = this.polls().find((p) => p.id === currentId) || null;
+      this.selectedPoll.set(updated);
+    }
   }
 }

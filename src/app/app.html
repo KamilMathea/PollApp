@@ -299,7 +299,8 @@
             <div class="question-block__options">
               @for (opt of q.poll_options; track opt.id) {
               <label class="checkbox-option">
-                <input [type]="q.allow_multiple ? 'checkbox' : 'radio'" [name]="'poll-question-' + q.id" />
+                <input type="checkbox" [checked]="selectedOptionIds().includes(opt.id!)"
+                  (change)="toggleOptionSelection(opt.id!, q.allow_multiple, q.poll_options)" />
                 <span>{{ opt.option_text }}</span>
               </label>
               }
@@ -336,9 +337,9 @@
             <div class="results-item__option">
               <span class="results-item__label">{{ opt.option_text }}</span>
               <div class="progress-bar">
-                <div class="progress-bar__fill" style="width: 0%;"></div>
+                <div class="progress-bar__fill" [style.width]="getOptionPercentage(opt, q)"></div>
               </div>
-              <span class="results-item__percent">0%</span>
+              <span class="results-item__percent">{{ getOptionPercentage(opt, q) }}</span>
             </div>
             }
           </div>
