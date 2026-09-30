@@ -345,13 +345,25 @@ export class App implements OnInit {
   }
 
   /**
+ * Checks if a poll already contains any submitted votes in the database.
+ * @param poll - Poll object to inspect.
+ * @returns True if at least one vote exists in any option.
+ */
+  private hasExistingVotes(poll: Poll | null): boolean {
+    if (!poll?.questions) return false;
+    return poll.questions.some((q) =>
+      q.poll_options?.some((opt) => opt.votes && opt.votes.length > 0)
+    );
+  }
+
+  /**
    * Opens detail modal for a selected poll.
    * @param poll - Poll object clicked.
    */
   protected openSurveyDetail(poll: Poll): void {
     this.selectedOptionIds.set([]);
     this.selectedPoll.set(poll);
-    this.hasVoted.set(false);
+    this.hasVoted.set(this.hasExistingVotes(poll));
     this.surveyDetailModal.nativeElement.showModal();
   }
 
@@ -386,23 +398,29 @@ export class App implements OnInit {
   }
 
   /**
- * Calculates total votes count for a specific question (including live preview selection).
+ * Calculates total votes count for a specific question (combining stored votes and live selections).
  * @param question - Question object.
  * @returns Total number of votes cast across all options of this question.
  */
   protected getQuestionTotalVotes(question: Question): number {
     if (!question.poll_options) return 0;
 
-    if (!this.hasVoted()) {
-      return question.poll_options.filter((opt) => opt.id && this.selectedOptionIds().includes(opt.id)).length;
-    }
+    const dbVotes = question.poll_options.reduce(
+      (sum, opt) => sum + (opt.votes?.length || 0),
+      0
+    );
 
-    return question.poll_options.reduce((sum, opt) => sum + (opt.votes?.length || 0), 0);
+    // Live preview selection before submitting
+    const localPreviewVotes = question.poll_options.filter(
+      (opt) => opt.id && this.selectedOptionIds().includes(opt.id)
+    ).length;
+
+    return dbVotes + localPreviewVotes;
   }
 
   /**
    * Calculates percentage of votes for a single option relative to its question.
-   * Supports live dynamic preview before voting.
+   * Supports both stored DB votes and dynamic live preview.
    * @param option - PollOption object.
    * @param question - Parent Question object.
    * @returns Formatted percentage string (e.g. "45%").
@@ -411,12 +429,9 @@ export class App implements OnInit {
     const total = this.getQuestionTotalVotes(question);
     if (!total) return '0%';
 
-    let count = 0;
-    if (!this.hasVoted()) {
-      count = option.id && this.selectedOptionIds().includes(option.id) ? 1 : 0;
-    } else {
-      count = option.votes?.length || 0;
-    }
+    const dbCount = option.votes?.length || 0;
+    const localCount = option.id && this.selectedOptionIds().includes(option.id) ? 1 : 0;
+    const count = dbCount + localCount;
 
     const percent = Math.round((count / total) * 100);
     return `${percent}%`;
