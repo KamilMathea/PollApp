@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild, computed, inject, OnInit, signal } fr
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
-import { Category, Poll, PollOption, Question } from './interfaces/poll.interface';
+import { Category, Poll, PollOption, Question, QuestionForm } from './interfaces/poll.interface';
 import { SupabaseService } from './services/supabase';
 
 /**
@@ -33,9 +33,9 @@ export class App implements OnInit {
   protected readonly endDate = signal<string>('');
   protected readonly description = signal<string>('');
 
-  protected readonly questionText = signal<string>('');
-  protected readonly allowMultiple = signal<boolean>(false);
-  protected readonly answerOptions = signal<string[]>(['', '']);
+  protected readonly questions = signal<QuestionForm[]>([
+    { questionText: '', allowMultiple: false, answerOptions: ['', ''] }
+  ]);
 
   protected readonly selectedPoll = signal<Poll | null>(null);
   protected readonly hasVoted = signal<boolean>(false);
@@ -176,30 +176,63 @@ export class App implements OnInit {
   }
 
   /**
-   * Updates question text signal.
-   * @param val - New question text string.
-   */
-  protected updateQuestionText(val: string): void {
-    this.questionText.set(val);
+ * Adds a new question form object to the questions array if the maximum limit of 6 is not reached.
+ */
+  protected addQuestion(): void {
+    if (this.questions().length >= 6) return;
+    this.questions.update((q) => [
+      ...q,
+      { questionText: '', allowMultiple: false, answerOptions: ['', ''] }
+    ]);
   }
 
   /**
-   * Toggles allow multiple answers state.
+   * Removes a question form entry at a specified index if more than one question exists.
+   * @param index - Index of the question to remove.
+   */
+  protected removeQuestion(index: number): void {
+    if (this.questions().length <= 1) return;
+    this.questions.update((q) => q.filter((_, i) => i !== index));
+  }
+
+  /**
+ * Updates the text string of a question at a specific index.
+ * @param index - Index of the targeted question.
+ * @param val - New question text value.
+ */
+  protected updateQuestionText(index: number, val: string): void {
+    this.questions.update((q) => {
+      const updated = [...q];
+      updated[index] = { ...updated[index], questionText: val };
+      return updated;
+    });
+  }
+
+  /**
+   * Toggles the allowMultiple property of a question at a specific index.
+   * @param index - Index of the targeted question.
    * @param val - Boolean checkbox state.
    */
-  protected updateAllowMultiple(val: boolean): void {
-    this.allowMultiple.set(val);
+  protected updateAllowMultiple(index: number, val: boolean): void {
+    this.questions.update((q) => {
+      const updated = [...q];
+      updated[index] = { ...updated[index], allowMultiple: val };
+      return updated;
+    });
   }
 
   /**
-   * Updates specific answer option at index.
-   * @param index - Index in options array.
-   * @param val - New answer string.
+   * Updates a specific answer option text for a question at given indices.
+   * @param qIndex - Index of the question.
+   * @param oIndex - Index of the answer option.
+   * @param val - New option text string.
    */
-  protected updateAnswerOption(index: number, val: string): void {
-    this.answerOptions.update((options) => {
-      const updated = [...options];
-      updated[index] = val;
+  protected updateAnswerOption(qIndex: number, oIndex: number, val: string): void {
+    this.questions.update((q) => {
+      const updated = [...q];
+      const options = [...updated[qIndex].answerOptions];
+      options[oIndex] = val;
+      updated[qIndex] = { ...updated[qIndex], answerOptions: options };
       return updated;
     });
   }
@@ -217,48 +250,59 @@ export class App implements OnInit {
   protected readonly showMaxAnswersHint = signal<boolean>(false);
 
   /**
-   * Appends a new blank answer option if the maximum limit of 6 is not reached.
-   * Activates the limit notice display upon interaction.
-   */
-  protected addAnswerOption(): void {
+ * Appends a new blank answer option to a specific question (max 6 options per question).
+ * @param qIndex - Index of the question.
+ */
+  protected addAnswerOption(qIndex: number): void {
     this.showMaxAnswersHint.set(true);
-    if (this.answerOptions().length >= 6) return;
-    this.answerOptions.update((options) => [...options, '']);
+    this.questions.update((q) => {
+      if (q[qIndex].answerOptions.length >= 6) return q;
+      const updated = [...q];
+      const options = [...updated[qIndex].answerOptions, ''];
+      updated[qIndex] = { ...updated[qIndex], answerOptions: options };
+      return updated;
+    });
   }
 
   /**
-   * Removes an answer option at given index.
-   * @param index - Index of option to delete.
+   * Removes an answer option from a specific question if at least two options remain.
+   * @param qIndex - Index of the question.
+   * @param oIndex - Index of the answer option to delete.
    */
-  protected removeAnswerOption(index: number): void {
-    if (this.answerOptions().length <= 2) return;
-    this.answerOptions.update((options) => options.filter((_, i) => i !== index));
+  protected removeAnswerOption(qIndex: number, oIndex: number): void {
+    this.questions.update((q) => {
+      if (q[qIndex].answerOptions.length <= 2) return q;
+      const updated = [...q];
+      const options = updated[qIndex].answerOptions.filter((_, i) => i !== oIndex);
+      updated[qIndex] = { ...updated[qIndex], answerOptions: options };
+      return updated;
+    });
   }
 
   /**
-   * Resets all modal form signals to default empty states.
-   */
+ * Resets all modal form signals to default empty states.
+ */
   private resetForm(): void {
     this.surveyTitle.set('');
     this.endDate.set('');
     this.description.set('');
     this.selectedModalCategory.set(null);
-    this.questionText.set('');
-    this.allowMultiple.set(false);
-    this.answerOptions.set(['', '']);
+    this.questions.set([
+      { questionText: '', allowMultiple: false, answerOptions: ['', ''] }
+    ]);
     this.showMaxAnswersHint.set(false);
   }
 
   /**
-   * Handles survey creation form submission and updates database state.
+   * Handles survey creation form submission and updates database state for multiple questions.
    */
   protected async onSubmitPoll(): Promise<void> {
     const payload = this.buildPollPayload();
-    const questionsPayload = [{
-      question_text: this.questionText(),
-      allow_multiple: this.allowMultiple(),
-      options: this.answerOptions()
-    }];
+    const questionsPayload = this.questions().map((q) => ({
+      question_text: q.questionText,
+      allow_multiple: q.allowMultiple,
+      options: q.answerOptions
+    }));
 
     const success = await this.supabaseService.createPoll(payload, questionsPayload);
 

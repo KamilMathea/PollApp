@@ -1,3 +1,12 @@
+/**
+ * Interface representing the state of an individual question form field in the survey creation modal.
+ */
+export interface QuestionForm {
+  questionText: string;
+  allowMultiple: boolean;
+  answerOptions: string[];
+}
+
 export interface PollOption {
   id?: number;
   question_id?: number;
