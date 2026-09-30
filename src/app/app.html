@@ -335,7 +335,7 @@
           Survey results <span class="highlight-live">LIVE</span>
         </h3>
 
-        @if (!hasVoted()) {
+        @if (!hasVoted() && selectedOptionIds().length === 0) {
         <div class="results-empty">
           <p class="results-empty__sub">Results will be shown here after participants complete the survey.</p>
           <p class="results-empty__main">There are no answers yet.</p>

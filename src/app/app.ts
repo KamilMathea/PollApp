@@ -386,17 +386,23 @@ export class App implements OnInit {
   }
 
   /**
-   * Calculates total votes count for a specific question.
-   * @param question - Question object.
-   * @returns Total number of votes cast across all options of this question.
-   */
+ * Calculates total votes count for a specific question (including live preview selection).
+ * @param question - Question object.
+ * @returns Total number of votes cast across all options of this question.
+ */
   protected getQuestionTotalVotes(question: Question): number {
     if (!question.poll_options) return 0;
+
+    if (!this.hasVoted()) {
+      return question.poll_options.filter((opt) => opt.id && this.selectedOptionIds().includes(opt.id)).length;
+    }
+
     return question.poll_options.reduce((sum, opt) => sum + (opt.votes?.length || 0), 0);
   }
 
   /**
    * Calculates percentage of votes for a single option relative to its question.
+   * Supports live dynamic preview before voting.
    * @param option - PollOption object.
    * @param question - Parent Question object.
    * @returns Formatted percentage string (e.g. "45%").
@@ -404,7 +410,14 @@ export class App implements OnInit {
   protected getOptionPercentage(option: PollOption, question: Question): string {
     const total = this.getQuestionTotalVotes(question);
     if (!total) return '0%';
-    const count = option.votes?.length || 0;
+
+    let count = 0;
+    if (!this.hasVoted()) {
+      count = option.id && this.selectedOptionIds().includes(option.id) ? 1 : 0;
+    } else {
+      count = option.votes?.length || 0;
+    }
+
     const percent = Math.round((count / total) * 100);
     return `${percent}%`;
   }
