@@ -302,20 +302,20 @@
         <p class="survey-detail__description">{{ selectedPoll()?.description }}</p>
 
         <div class="survey-detail__questions">
-          @for (q of selectedPoll()?.questions; track q.id) {
+          @for (q of selectedPoll()?.questions; track q.id; let qIndex = $index) {
           <div class="question-block">
-            <h3 class="question-block__title">{{ q.question_text }}</h3>
+            <h3 class="question-block__title">{{ qIndex + 1 }}. {{ q.question_text }}</h3>
 
             @if (q.allow_multiple) {
             <p class="question-block__hint">More than one answer is possible.</p>
             }
 
             <div class="question-block__options">
-              @for (opt of q.poll_options; track opt.id) {
+              @for (opt of q.poll_options; track opt.id; let optIndex = $index) {
               <label class="checkbox-option">
                 <input type="checkbox" [checked]="selectedOptionIds().includes(opt.id!)"
                   (change)="toggleOptionSelection(opt.id!, q.allow_multiple, q.poll_options)" />
-                <span>{{ opt.option_text }}</span>
+                <span>{{ getLetterPrefix(optIndex) }} {{ opt.option_text }}</span>
               </label>
               }
             </div>
@@ -343,13 +343,13 @@
         }
         @else {
         <div class="results-list">
-          @for (q of selectedPoll()?.questions; track q.id) {
+          @for (q of selectedPoll()?.questions; track q.id; let qIndex = $index) {
           <div class="results-item">
-            <p class="results-item__question">{{ q.question_text }}</p>
+            <p class="results-item__question">{{ qIndex + 1 }}. {{ q.question_text }}</p>
 
-            @for (opt of q.poll_options; track opt.id) {
+            @for (opt of q.poll_options; track opt.id; let optIndex = $index) {
             <div class="results-item__option">
-              <span class="results-item__label">{{ opt.option_text }}</span>
+              <span class="results-item__label">{{ getLetterPrefix(optIndex) }}</span>
               <div class="progress-bar">
                 <div class="progress-bar__fill" [style.width]="getOptionPercentage(opt, q)"></div>
               </div>

@@ -423,7 +423,7 @@ export class App implements OnInit {
   }
 
   /**
-   * Handles user vote submission and refreshes poll data.
+   * Handles user vote submission, updates poll state, and closes the detail modal.
    */
   protected async submitVote(): Promise<void> {
     const selected = this.selectedOptionIds();
@@ -435,6 +435,7 @@ export class App implements OnInit {
       }
     }
     this.hasVoted.set(true);
+    this.closeSurveyDetail();
   }
 
   /**
