@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { Category, Poll, PollOption, Question, QuestionForm } from './interfaces/poll.interface';
 import { SupabaseService } from './services/supabase';
+import { formatRemainingTime, getLetterPrefix, hasExistingVotes } from './utils/poll.utils';
 
 /**
  * Root component managing survey lists, creation modal, and survey details.
@@ -28,17 +29,17 @@ export class App implements OnInit {
   protected readonly dbCategories = signal<Category[]>([]);
   protected readonly isDropdownOpen = signal<boolean>(false);
   protected readonly selectedModalCategory = signal<Category | null>(null);
-
   protected readonly surveyTitle = signal<string>('');
   protected readonly endDate = signal<string>('');
   protected readonly description = signal<string>('');
-
   protected readonly questions = signal<QuestionForm[]>([
     { questionText: '', allowMultiple: false, answerOptions: ['', ''] }
   ]);
-
   protected readonly selectedPoll = signal<Poll | null>(null);
   protected readonly hasVoted = signal<boolean>(false);
+  protected readonly selectedOptionIds = signal<number[]>([]);
+  protected readonly formatRemainingTime = formatRemainingTime;
+  protected readonly getLetterPrefix = getLetterPrefix;
 
   /**
    * Angular lifecycle hook invoked after data-bound properties are initialized.
@@ -84,12 +85,10 @@ export class App implements OnInit {
     const now = new Date().getTime();
     const tab = this.activeTab();
     const cat = this.selectedCategory();
-
     return this.polls().filter((p) => {
       const isExpired = p.expires_at ? new Date(p.expires_at).getTime() < now : false;
       const matchesTab = tab === 'active' ? !isExpired : isExpired;
       const matchesCat = cat === 'All Surveys' || cat === '' || p.category?.name === cat;
-
       return matchesTab && matchesCat;
     });
   });
@@ -237,16 +236,6 @@ export class App implements OnInit {
     });
   }
 
-  /**
-   * Converts a zero-based index into an uppercase alphabetical prefix (e.g. 0 -> 'A.', 1 -> 'B.').
-   *
-   * @param index - Zero-based index of the option.
-   * @returns Formatted letter prefix string.
-   */
-  protected getLetterPrefix(index: number): string {
-    return String.fromCharCode(65 + index) + '.';
-  }
-
   protected readonly showMaxAnswersHint = signal<boolean>(false);
 
   /**
@@ -303,9 +292,7 @@ export class App implements OnInit {
       allow_multiple: q.allowMultiple,
       options: q.answerOptions
     }));
-
     const success = await this.supabaseService.createPoll(payload, questionsPayload);
-
     if (success) {
       await this.loadPolls();
       this.closeModal();
@@ -318,7 +305,6 @@ export class App implements OnInit {
    */
   private buildPollPayload() {
     const selectedCat = this.selectedModalCategory();
-
     return {
       title: this.surveyTitle(),
       description: this.description() || null,
@@ -328,42 +314,13 @@ export class App implements OnInit {
   }
 
   /**
-   * Formats remaining duration until poll expiration into readable text.
-   * @param expiresAt - Expiration ISO timestamp string.
-   * @returns Human readable remaining time string.
-   */
-  protected formatRemainingTime(expiresAt?: string): string {
-    if (!expiresAt) return 'No deadline';
-    const diff = new Date(expiresAt).getTime() - new Date().getTime();
-    if (diff <= 0) return 'Ended';
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    if (days > 0) return `Ends in ${days} day${days > 1 ? 's' : ''}`;
-
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    return `Ends in ${hours} hour${hours > 1 ? 's' : ''}`;
-  }
-
-  /**
- * Checks if a poll already contains any submitted votes in the database.
- * @param poll - Poll object to inspect.
- * @returns True if at least one vote exists in any option.
- */
-  private hasExistingVotes(poll: Poll | null): boolean {
-    if (!poll?.questions) return false;
-    return poll.questions.some((q) =>
-      q.poll_options?.some((opt) => opt.votes && opt.votes.length > 0)
-    );
-  }
-
-  /**
    * Opens detail modal for a selected poll.
    * @param poll - Poll object clicked.
    */
   protected openSurveyDetail(poll: Poll): void {
     this.selectedOptionIds.set([]);
     this.selectedPoll.set(poll);
-    this.hasVoted.set(this.hasExistingVotes(poll));
+    this.hasVoted.set(hasExistingVotes(poll));
     this.surveyDetailModal.nativeElement.showModal();
   }
 
@@ -373,8 +330,6 @@ export class App implements OnInit {
   protected closeSurveyDetail(): void {
     this.surveyDetailModal.nativeElement.close();
   }
-
-  protected readonly selectedOptionIds = signal<number[]>([]);
 
   /**
    * Toggles the selection state of an option ID for single or multiple choice.
@@ -404,17 +359,13 @@ export class App implements OnInit {
  */
   protected getQuestionTotalVotes(question: Question): number {
     if (!question.poll_options) return 0;
-
     const dbVotes = question.poll_options.reduce(
       (sum, opt) => sum + (opt.votes?.length || 0),
       0
     );
-
-    // Live preview selection before submitting
     const localPreviewVotes = question.poll_options.filter(
       (opt) => opt.id && this.selectedOptionIds().includes(opt.id)
     ).length;
-
     return dbVotes + localPreviewVotes;
   }
 
@@ -428,11 +379,9 @@ export class App implements OnInit {
   protected getOptionPercentage(option: PollOption, question: Question): string {
     const total = this.getQuestionTotalVotes(question);
     if (!total) return '0%';
-
     const dbCount = option.votes?.length || 0;
     const localCount = option.id && this.selectedOptionIds().includes(option.id) ? 1 : 0;
     const count = dbCount + localCount;
-
     const percent = Math.round((count / total) * 100);
     return `${percent}%`;
   }
