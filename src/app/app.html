@@ -82,10 +82,10 @@
         }
       </div>
 
-      <!-- Ausgewählte Kategorie eigenständig darunter -->
-      @if (selectedCategory() !== 'All Surveys' && selectedCategory() !== '') {
-      <span class="custom-dropdown__selected-display">{{ selectedCategory() }}</span>
-      }
+      <span class="custom-dropdown__selected-display"
+        [class.is-visible]="selectedCategory() !== 'All Surveys' && selectedCategory() !== ''">
+        {{ selectedCategory() !== 'All Surveys' ? selectedCategory() : '&nbsp;' }}
+      </span>
     </div>
   </div>
 
@@ -170,10 +170,9 @@
                 }
               </div>
 
-              <!-- Ausgewählte Kategorie eigenständig darunter -->
-              @if (selectedModalCategory(); as selected) {
-              <span class="custom-dropdown__selected-display">{{ selected.name }}</span>
-              }
+              <span class="custom-dropdown__selected-display" [class.is-visible]="selectedModalCategory() !== null">
+                {{ selectedModalCategory() ? selectedModalCategory()?.name : '&nbsp;' }}
+              </span>
             </div>
 
           </div>

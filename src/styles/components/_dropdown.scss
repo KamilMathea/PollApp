@@ -66,6 +66,12 @@
         font-weight: 600;
         margin-top: 4px;
         padding-left: 12px;
+        min-height: 1.25rem;
+        visibility: hidden;
+
+        &.is-visible {
+            visibility: visible;
+        }
     }
 
     &__dropdown-list {
