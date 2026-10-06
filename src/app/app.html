@@ -64,11 +64,8 @@
     <div class="all-surveys__sort">
       <div class="custom-dropdown" [class.is-open]="isOpen()"
         [class.has-selection]="selectedCategory() !== 'All Surveys'">
-
         <button type="button" class="custom-dropdown__select" (click)="toggleDropdown()">
-          <span class="custom-dropdown__trigger-text">
-            {{ selectedCategory() || 'Sort by categories' }}
-          </span>
+          <span class="custom-dropdown__trigger-text">All Surveys</span>
         </button>
 
         @if (isOpen()) {
@@ -84,6 +81,11 @@
         </ul>
         }
       </div>
+
+      <!-- Ausgewählte Kategorie eigenständig darunter -->
+      @if (selectedCategory() !== 'All Surveys' && selectedCategory() !== '') {
+      <span class="custom-dropdown__selected-display">{{ selectedCategory() }}</span>
+      }
     </div>
   </div>
 
@@ -154,9 +156,7 @@
               <div class="custom-dropdown" [class.is-open]="isDropdownOpen()"
                 [class.has-selection]="selectedModalCategory() !== null">
                 <button type="button" class="custom-dropdown__select" (click)="toggleModalDropdown()">
-                  <span class="custom-dropdown__trigger-text">
-                    {{ selectedModalCategory()?.name || 'Choose category' }}
-                  </span>
+                  <span class="custom-dropdown__trigger-text">Choose category</span>
                 </button>
 
                 @if (isDropdownOpen()) {
@@ -169,6 +169,11 @@
                 </ul>
                 }
               </div>
+
+              <!-- Ausgewählte Kategorie eigenständig darunter -->
+              @if (selectedModalCategory(); as selected) {
+              <span class="custom-dropdown__selected-display">{{ selected.name }}</span>
+              }
             </div>
 
           </div>
