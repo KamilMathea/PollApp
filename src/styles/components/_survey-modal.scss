@@ -45,6 +45,49 @@
     }
 }
 
+.publish-container {
+    position: relative;
+    display: inline-flex;
+}
+
+.publish-success-overlay {
+    position: absolute;
+    bottom: 0;
+    right: -8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background-color: $orange-light;
+    color: $primary-purple;
+    border-radius: 0 50px 0 0;
+    min-width: 250px;
+    z-index: 10;
+
+    &__text {
+        font-family: 'Nerko One', cursive, sans-serif;
+        font-size: 1.25rem;
+    }
+
+    &__close {
+        background: transparent;
+        border: none;
+        color: $primary-purple;
+        font-size: 1.5rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+}
+
 .survey-form {
     background-color: $bg-inner-card;
     border-radius: 0 80px 0 0;
