@@ -5,7 +5,7 @@
     border-radius: 0 100px 0 0;
     width: 100%;
     max-width: 1150px;
-    padding: 32px;
+    padding: clamp(16px, 3.5vw, 32px);
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -91,11 +91,11 @@
 .survey-form {
     background-color: $bg-inner-card;
     border-radius: 0 80px 0 0;
-    padding: 40px;
+    padding: clamp(16px, 4vw, 40px);
     color: $color-white-soft;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 32px;
+    gap: clamp(24px, 3vw, 32px);
 
     &__section {
         display: flex;
@@ -327,10 +327,10 @@
     color: $color-white-soft;
     border: none;
     border-radius: $radius-button;
-    padding: 12px 20px;
+    padding: clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 20px);
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     cursor: pointer;
     font-size: 1rem;
     font-weight: 700;
@@ -354,11 +354,11 @@
 
 @media (max-width: 1024px) {
     .modal-card {
-        padding: 24px;
         border-radius: 0 60px 0 0;
 
         &__header {
             position: relative;
+            margin: 8px 0 0;
         }
 
         &__title-row {
@@ -395,8 +395,6 @@
         display: flex;
         flex-direction: column;
         border-radius: 0 40px 0 0;
-        padding: 24px;
-        gap: 20px;
 
         &__row {
             flex-direction: column;
