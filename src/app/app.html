@@ -273,9 +273,21 @@
       </form>
 
       <div class="modal-card__footer">
-        <button type="button" class="btn-primary btn-publish" (click)="onSubmitPoll()">
-          Publish
-        </button>
+        <div class="publish-container">
+          <button type="button" class="btn-primary btn-publish" (click)="onSubmitPoll()">
+            Publish
+          </button>
+
+          @if (showSuccessOverlay()) {
+          <div class="publish-success-overlay">
+            <span class="publish-success-overlay__text">Your survey is now published</span>
+            <button type="button" class="publish-success-overlay__close" (click)="closeSuccessOverlay()"
+              aria-label="Close">
+              &times;
+            </button>
+          </div>
+          }
+        </div>
       </div>
 
     </div>

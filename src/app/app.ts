@@ -40,6 +40,8 @@ export class App implements OnInit {
   protected readonly selectedOptionIds = signal<number[]>([]);
   protected readonly formatRemainingTime = formatRemainingTime;
   protected readonly getLetterPrefix = getLetterPrefix;
+  protected readonly showSuccessOverlay = signal<boolean>(false);
+  protected readonly createdPollId = signal<number | null>(null);
 
   /**
    * Angular lifecycle hook invoked after data-bound properties are initialized.
@@ -280,6 +282,8 @@ export class App implements OnInit {
       { questionText: '', allowMultiple: false, answerOptions: ['', ''] }
     ]);
     this.showMaxAnswersHint.set(false);
+    this.showSuccessOverlay.set(false);
+    this.createdPollId.set(null);
   }
 
   /**
@@ -292,10 +296,13 @@ export class App implements OnInit {
       allow_multiple: q.allowMultiple,
       options: q.answerOptions
     }));
-    const success = await this.supabaseService.createPoll(payload, questionsPayload);
-    if (success) {
+
+    const createdId = await this.supabaseService.createPoll(payload, questionsPayload);
+
+    if (createdId) {
       await this.loadPolls();
-      this.closeModal();
+      this.createdPollId.set(createdId);
+      this.showSuccessOverlay.set(true); // Overlay anzeigen
     }
   }
 
@@ -311,6 +318,24 @@ export class App implements OnInit {
       category_id: selectedCat ? selectedCat.id : null,
       expires_at: this.endDate() ? new Date(this.endDate()).toISOString() : null,
     };
+  }
+
+  /**
+ * Closes the publication success overlay, resets the survey creation modal,
+ * and opens the detail view for the newly created poll if available.
+ */
+  protected closeSuccessOverlay(): void {
+    const pollId = this.createdPollId();
+    this.showSuccessOverlay.set(false);
+    this.closeModal();
+
+    if (pollId) {
+      const newlyCreatedPoll = this.polls().find((p) => p.id === pollId);
+      if (newlyCreatedPoll) {
+        this.openSurveyDetail(newlyCreatedPoll);
+      }
+    }
+    this.createdPollId.set(null);
   }
 
   /**

@@ -50,15 +50,17 @@ export class SupabaseService {
    *
    * @param pollData - Main metadata for the poll (title, description, category, expiration).
    * @param questionsData - Array of questions with their configuration and options.
-   * @returns Resolves to `true` if the entire poll creation succeeded, otherwise `false`.
+   * @returns Resolves to the created poll's ID if successful, otherwise `null`.
    */
   async createPoll(
     pollData: { title: string; description: string | null; category_id: number | null; expires_at: string | null },
     questionsData: { question_text: string; allow_multiple: boolean; options: string[] }[]
-  ): Promise<boolean> {
+  ): Promise<number | null> {
     const { data: poll, error } = await this.supabase.from('polls').insert([pollData]).select().single();
-    if (error || !poll) return false;
-    return await this.saveQuestions(poll.id, questionsData);
+    if (error || !poll) return null;
+
+    const success = await this.saveQuestions(poll.id, questionsData);
+    return success ? poll.id : null;
   }
 
   /**
