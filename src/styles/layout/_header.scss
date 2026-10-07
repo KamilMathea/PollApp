@@ -34,8 +34,16 @@
         color: $text-light;
     }
 
+    &__text {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+    }
+
     &__btn {
-        width: 100%;
+        align-self: center;
+        width: calc(100% - 112px);
+        max-width: 320px;
     }
 
     &__image-wrapper {
@@ -57,7 +65,7 @@
         display: block;
     }
 
-    @media (min-width: 768px) {
+    @media (min-width: 1025px) {
         padding: 48px 100px 80px;
 
         &__content {
@@ -83,7 +91,9 @@
         }
 
         &__btn {
+            align-self: flex-start;
             width: auto;
+            max-width: none;
         }
 
         &__image-wrapper {
