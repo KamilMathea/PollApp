@@ -19,7 +19,7 @@
         align-items: center;
         justify-content: center;
         min-height: 100vh;
-        padding: 24px;
+        padding: clamp(16px, 4vw, 24px) clamp(12px, 3vw, 24px);
     }
 
     &__mobile-logo {
@@ -34,10 +34,15 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .modal-dialog {
         &__mobile-logo {
             display: block;
+
+            img {
+                height: clamp(32px, 6vw, 80px);
+                width: auto;
+            }
         }
     }
 }
