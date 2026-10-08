@@ -367,9 +367,9 @@
             <div class="results-item__option">
               <span class="results-item__label">{{ getLetterPrefix(optIndex) }}</span>
               <div class="progress-bar">
-                <div class="progress-bar__fill" [style.width]="getOptionPercentage(opt, q)"></div>
+                <div class="progress-bar__fill" [style.width]="getOptionPercentage(opt, q, selectedOptionIds())"></div>
               </div>
-              <span class="results-item__percent">{{ getOptionPercentage(opt, q) }}</span>
+              <span class="results-item__percent">{{ getOptionPercentage(opt, q, selectedOptionIds()) }}</span>
             </div>
             }
           </div>

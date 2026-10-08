@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { Category, Poll, PollOption, Question, QuestionForm } from './interfaces/poll.interface';
 import { SupabaseService } from './services/supabase';
-import { formatRemainingTime, getLetterPrefix, hasExistingVotes } from './utils/poll.utils';
+import { formatRemainingTime, getLetterPrefix, hasExistingVotes, getQuestionTotalVotes, getOptionPercentage, buildPollPayload } from './utils/poll.utils';
 
 /**
  * Root component managing survey lists, creation modal, and survey details.
@@ -39,6 +39,8 @@ export class App implements OnInit {
   protected readonly hasVoted = signal<boolean>(false);
   protected readonly selectedOptionIds = signal<number[]>([]);
   protected readonly formatRemainingTime = formatRemainingTime;
+  protected readonly getQuestionTotalVotes = getQuestionTotalVotes;
+  protected readonly getOptionPercentage = getOptionPercentage;
   protected readonly getLetterPrefix = getLetterPrefix;
   protected readonly showSuccessOverlay = signal<boolean>(false);
   protected readonly createdPollId = signal<number | null>(null);
@@ -304,7 +306,12 @@ export class App implements OnInit {
    * Handles survey creation form submission and updates database state for multiple questions.
    */
   protected async onSubmitPoll(): Promise<void> {
-    const payload = this.buildPollPayload();
+    const payload = buildPollPayload(
+      this.surveyTitle(),
+      this.description(),
+      this.selectedModalCategory(),
+      this.endDate()
+    );
     const questionsPayload = this.questions().map((q) => ({
       question_text: q.questionText,
       allow_multiple: q.allowMultiple,
@@ -316,22 +323,8 @@ export class App implements OnInit {
     if (createdId) {
       await this.loadPolls();
       this.createdPollId.set(createdId);
-      this.showSuccessOverlay.set(true); // Overlay anzeigen
+      this.showSuccessOverlay.set(true);
     }
-  }
-
-  /**
-   * Builds payload object for poll table insertion.
-   * @returns Formatted poll data object.
-   */
-  private buildPollPayload() {
-    const selectedCat = this.selectedModalCategory();
-    return {
-      title: this.surveyTitle(),
-      description: this.description() || null,
-      category_id: selectedCat ? selectedCat.id : null,
-      expires_at: this.endDate() ? new Date(this.endDate()).toISOString() : null,
-    };
   }
 
   /**
@@ -391,40 +384,6 @@ export class App implements OnInit {
       const updated = current.includes(optionId) ? cleaned : [...cleaned, optionId];
       this.selectedOptionIds.set(updated);
     }
-  }
-
-  /**
- * Calculates total votes count for a specific question (combining stored votes and live selections).
- * @param question - Question object.
- * @returns Total number of votes cast across all options of this question.
- */
-  protected getQuestionTotalVotes(question: Question): number {
-    if (!question.poll_options) return 0;
-    const dbVotes = question.poll_options.reduce(
-      (sum, opt) => sum + (opt.votes?.length || 0),
-      0
-    );
-    const localPreviewVotes = question.poll_options.filter(
-      (opt) => opt.id && this.selectedOptionIds().includes(opt.id)
-    ).length;
-    return dbVotes + localPreviewVotes;
-  }
-
-  /**
-   * Calculates percentage of votes for a single option relative to its question.
-   * Supports both stored DB votes and dynamic live preview.
-   * @param option - PollOption object.
-   * @param question - Parent Question object.
-   * @returns Formatted percentage string (e.g. "45%").
-   */
-  protected getOptionPercentage(option: PollOption, question: Question): string {
-    const total = this.getQuestionTotalVotes(question);
-    if (!total) return '0%';
-    const dbCount = option.votes?.length || 0;
-    const localCount = option.id && this.selectedOptionIds().includes(option.id) ? 1 : 0;
-    const count = dbCount + localCount;
-    const percent = Math.round((count / total) * 100);
-    return `${percent}%`;
   }
 
   /**
