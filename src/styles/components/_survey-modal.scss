@@ -53,15 +53,18 @@
 .publish-success-overlay {
     position: absolute;
     bottom: 0;
-    right: -8px;
+    right: -6px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 12px;
     padding: 10px 16px;
     background-color: $orange-light;
     color: $primary-purple;
     border-radius: 0 50px 0 0;
-    min-width: 250px;
+    min-width: 275px;
+    max-width: calc(100vw - 32px);
+    min-height: 75px;
     z-index: 10;
 
     &__text {
@@ -73,13 +76,14 @@
         background: transparent;
         border: none;
         color: $primary-purple;
-        font-size: 1.5rem;
+        font-size: 2rem;
         line-height: 1;
         cursor: pointer;
         padding: 0 4px;
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
         transition: opacity 0.2s ease;
 
         &:hover {

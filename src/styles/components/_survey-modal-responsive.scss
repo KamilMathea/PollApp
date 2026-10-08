@@ -31,10 +31,15 @@
         &__footer {
             justify-content: center;
 
-            .btn-publish {
-                width: 100%;
-                max-width: 150px;
-                text-align: center;
+            .publish-container {
+                position: relative;
+                display: inline-flex;
+                justify-content: center;
+            }
+
+            .publish-success-overlay {
+                right: 50%;
+                transform: translateX(50%);
             }
         }
     }
