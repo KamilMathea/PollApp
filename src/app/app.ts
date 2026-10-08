@@ -122,9 +122,22 @@ export class App implements OnInit {
   }
 
   /**
+   * Toggles the background scroll lock when a modal opens or closes.
+   * @param lock - True to disable body scrolling, false to enable it.
+   */
+  private toggleScrollLock(lock: boolean): void {
+    if (lock) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+  }
+
+  /**
    * Opens the create survey modal dialog.
    */
   protected openModal(): void {
+    this.toggleScrollLock(true);
     this.surveyModal.nativeElement.showModal();
   }
 
@@ -134,6 +147,7 @@ export class App implements OnInit {
   protected closeModal(): void {
     this.resetForm();
     this.surveyModal.nativeElement.close();
+    this.toggleScrollLock(false);
   }
 
   /**
@@ -346,6 +360,7 @@ export class App implements OnInit {
     this.selectedOptionIds.set([]);
     this.selectedPoll.set(poll);
     this.hasVoted.set(hasExistingVotes(poll));
+    this.toggleScrollLock(true);
     this.surveyDetailModal.nativeElement.showModal();
   }
 
@@ -354,6 +369,7 @@ export class App implements OnInit {
    */
   protected closeSurveyDetail(): void {
     this.surveyDetailModal.nativeElement.close();
+    this.toggleScrollLock(false);
   }
 
   /**

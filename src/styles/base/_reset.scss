@@ -8,3 +8,7 @@ html, body {
   height: 100%;
   background-color: rgba(53, 39, 58, 1);
 }
+
+body.no-scroll {
+  overflow: hidden;
+}

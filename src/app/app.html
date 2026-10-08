@@ -102,7 +102,7 @@
   </div>
 </section>
 
-<dialog #surveyModal class="modal-dialog">
+<dialog #surveyModal class="modal-dialog" (cancel)="closeModal()">
   <div class="modal-dialog__container">
 
     <div class="modal-dialog__mobile-logo">
@@ -294,7 +294,7 @@
   </div>
 </dialog>
 
-<dialog #surveyDetailModal class="modal-dialog">
+<dialog #surveyDetailModal class="modal-dialog" (cancel)="closeSurveyDetail()">
   <div class="modal-dialog__container">
 
     <div class="modal-detail-header">
