@@ -27,7 +27,10 @@ export class SupabaseService {
       .select('*')
       .order('id', { ascending: true });
 
-    if (error) console.error('Error fetching categories:', error);
+    if (error) {
+      return [];
+    }
+
     return (data as Category[]) || [];
   }
 
@@ -41,7 +44,10 @@ export class SupabaseService {
       .select('*, category:categories(*), questions:questions(*, poll_options(*, votes(*)))')
       .order('created_at', { ascending: false });
 
-    if (error) console.error('Error fetching polls:', error);
+    if (error) {
+      return [];
+    }
+
     return (data as Poll[]) || [];
   }
 
@@ -122,7 +128,7 @@ export class SupabaseService {
     if (!optionIds.length) return true;
     const payload = optionIds.map((id) => ({ option_id: id }));
     const { error } = await this.supabase.from('votes').insert(payload);
-    if (error) console.error('Error submitting votes:', error);
+
     return !error;
   }
 }
