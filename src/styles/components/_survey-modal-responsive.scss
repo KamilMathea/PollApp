@@ -80,4 +80,13 @@
             display: none;
         }
     }
+
+    .add-answer-wrapper {
+        flex-wrap: wrap;
+        gap: 8px 16px;
+    }
+
+    .add-answer-hint {
+        margin-top: 4px;
+    }
 }
