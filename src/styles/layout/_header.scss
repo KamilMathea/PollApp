@@ -24,8 +24,8 @@
     &__title {
         color: $primary-orange;
         font-size: 2.5rem;
-        line-height: 1.1;
         margin-bottom: 16px;
+        text-align: center;
     }
 
     &__description {
@@ -53,6 +53,15 @@
         &--mobile {
             display: block;
             margin-bottom: 16px;
+            text-align: center;
+
+            .hero__img {
+                max-width: 320px;
+                width: 100%;
+                height: auto;
+                margin: 0 auto;
+                display: block;
+            }
         }
 
         &--desktop {
@@ -84,6 +93,7 @@
         &__title {
             font-size: 5rem;
             margin-bottom: 20px;
+            text-align: left;
         }
 
         &__description {
