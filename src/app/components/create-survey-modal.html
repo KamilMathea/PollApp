@@ -94,16 +94,16 @@
                     <div class="form-group">
                         <div class="form-group__label-row">
                             <label [for]="'question' + qIndex">{{ qIndex + 1 }}. Question</label>
-                            @if (questions().length > 1) {
-                            <button type="button" class="btn-trash" aria-label="Frage löschen"
-                                (click)="removeQuestion(qIndex)">
+                            <button type="button" class="btn-trash" aria-label="Fragetext löschen"
+                                (click)="updateQuestionText(qIndex, '')">
                                 <img src="assets/images/Trash.svg" alt="Delete" />
                             </button>
-                            }
                         </div>
-                        <input type="text" [id]="'question' + qIndex" class="form-control" [ngModel]="q.questionText"
-                            (ngModelChange)="updateQuestionText(qIndex, $event)" (blur)="markQuestionTouched(qIndex)"
-                            [name]="'questionText' + qIndex" />
+                        <div class="input-with-action">
+                            <input type="text" [id]="'question' + qIndex" class="form-control"
+                                [ngModel]="q.questionText" (ngModelChange)="updateQuestionText(qIndex, $event)"
+                                (blur)="markQuestionTouched(qIndex)" [name]="'questionText' + qIndex" />
+                        </div>
                         <div class="error-message" [class.is-visible]="showQuestionError(qIndex)">
                             Question text is required.
                         </div>
@@ -122,7 +122,7 @@
                         <div class="answer-option__header">
                             <span class="answer-option__prefix">{{ getLetterPrefix(oIndex) }}</span>
                             <button type="button" class="btn-trash btn-trash--mobile-header"
-                                aria-label="Antwort löschen" (click)="removeAnswerOption(qIndex, oIndex)">
+                                aria-label="Antwort löschen" (click)="handleAnswerTrash(qIndex, oIndex)">
                                 <img src="assets/images/Trash.svg" alt="Delete" />
                             </button>
                         </div>
@@ -131,7 +131,7 @@
                                 (ngModelChange)="updateAnswerOption(qIndex, oIndex, $event)"
                                 [name]="'answerOption_' + qIndex + '_' + oIndex" />
                             <button type="button" class="btn-trash btn-trash--desktop-inline"
-                                aria-label="Antwort löschen" (click)="removeAnswerOption(qIndex, oIndex)">
+                                aria-label="Antwort löschen" (click)="handleAnswerTrash(qIndex, oIndex)">
                                 <img src="assets/images/Trash.svg" alt="Delete" />
                             </button>
                         </div>

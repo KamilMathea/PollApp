@@ -238,6 +238,20 @@ export class CreateSurveyModal {
     }
 
     /**
+     * Handles click on answer option trash button. Clears input if <= 2 options, removes option otherwise.
+     * @param qIndex - Question index.
+     * @param oIndex - Option index.
+     */
+    protected handleAnswerTrash(qIndex: number, oIndex: number): void {
+        const currentOptions = this.questions()[qIndex].answerOptions;
+        if (currentOptions.length <= 2) {
+            this.updateAnswerOption(qIndex, oIndex, '');
+        } else {
+            this.removeAnswerOption(qIndex, oIndex);
+        }
+    }
+
+    /**
      * Appends an answer option entry to a question item (max limit 6).
      * @param qIndex - Targeted question index.
      */
