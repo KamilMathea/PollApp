@@ -141,4 +141,13 @@ export class App implements OnInit {
   protected async onVoteSubmitted(): Promise<void> {
     await this.loadPolls();
   }
+
+  /**
+ * Resets the view to the default home overview state.
+ */
+protected resetToHome(): void {
+  this.selectedCategory.set('All Surveys');
+  this.activeTab.set('active');
+  this.isOpen.set(false);
+}
 }

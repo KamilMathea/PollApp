@@ -1,7 +1,7 @@
 <dialog #surveyModal class="modal-dialog" (cancel)="closeModal()">
     <div class="modal-dialog__container">
         <div class="modal-dialog__mobile-logo">
-            <img src="assets/images/Logo_dark.svg" alt="PollApp Logo" />
+            <img src="assets/images/Logo_dark.svg" alt="PollApp Logo" (click)="closeModal()" />
         </div>
         <div class="modal-card">
             <div class="modal-card__header">

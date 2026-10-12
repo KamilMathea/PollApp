@@ -9,6 +9,12 @@ html, body {
   background-color: rgba(53, 39, 58, 1);
 }
 
+body {
+  max-width: 1440px;
+  margin: 0 auto;
+  position: relative;
+}
+
 body.no-scroll {
   overflow: hidden;
 }
