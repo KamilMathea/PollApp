@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, inject, signal, output } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject, signal, output, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Poll, PollOption } from '../interfaces/poll.interface';
 import { SupabaseService } from '../services/supabase';
@@ -15,7 +15,6 @@ import { getLetterPrefix, getOptionPercentage, hasExistingVotes } from '../utils
 })
 export class DetailSurveyModal {
     private readonly supabaseService: SupabaseService = inject(SupabaseService);
-
     @ViewChild('surveyDetailModal') private surveyDetailModal!: ElementRef<HTMLDialogElement>;
 
     /**
@@ -31,9 +30,17 @@ export class DetailSurveyModal {
     protected readonly selectedPoll = signal<Poll | null>(null);
     protected readonly hasVoted = signal<boolean>(false);
     protected readonly selectedOptionIds = signal<number[]>([]);
-
+    protected readonly isResultsCollapsed = signal<boolean>(false);
     protected readonly getLetterPrefix = getLetterPrefix;
     protected readonly getOptionPercentage = getOptionPercentage;
+
+    /**
+     * Checks if the current poll contains any existing results/votes.
+     */
+    protected readonly hasResults = computed(() => {
+        const poll = this.selectedPoll();
+        return hasExistingVotes(poll) || this.selectedOptionIds().length > 0;
+    });
 
     /**
      * Opens survey detail modal dialog with poll payload.
@@ -43,6 +50,7 @@ export class DetailSurveyModal {
         this.selectedOptionIds.set([]);
         this.selectedPoll.set(poll);
         this.hasVoted.set(hasExistingVotes(poll));
+        this.isResultsCollapsed.set(false);
         this.toggleScrollLock(true);
         this.surveyDetailModal.nativeElement.showModal();
     }
@@ -65,6 +73,14 @@ export class DetailSurveyModal {
         } else {
             document.body.classList.remove('no-scroll');
         }
+    }
+
+    /**
+     * Toggles visibility state of survey results.
+     */
+    protected toggleResultsCollapse(): void {
+        if (!this.hasResults()) return;
+        this.isResultsCollapsed.update((v) => !v);
     }
 
     /**

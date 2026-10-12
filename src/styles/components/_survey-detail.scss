@@ -204,6 +204,50 @@
     }
 }
 
+.results-header-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+
+    .survey-detail__results-title {
+        margin-bottom: 0;
+        text-align: center;
+    }
+}
+
+.results-toggle-dropdown {
+    display: none;
+
+    .custom-dropdown__select {
+        padding: 4px 28px 4px 8px;
+
+        .custom-dropdown__trigger-text {
+            color: $primary-purple;
+            font-size: 1rem;
+        }
+
+        &::after {
+            background-color: $primary-purple;
+            right: 8px;
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    &.has-results-hidden {
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+
+.results-list.is-hidden,
+.results-empty.is-hidden,
+.survey-detail__results-title.is-hidden {
+    display: none;
+}
+
 @media (max-width: 1024px) {
     .create-survey-btn {
         padding: clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 20px);
@@ -231,5 +275,9 @@
                 width: 100%;
             }
         }
+    }
+
+    .results-toggle-dropdown {
+        display: inline-flex;
     }
 }

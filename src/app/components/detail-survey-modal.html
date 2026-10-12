@@ -1,8 +1,9 @@
-<dialog #surveyDetailModal class="modal-dialog" (cancel)="closeSurveyDetail()">
+<dialog #surveyDetailModal class="modal-dialog" (cancel)='closeSurveyDetail()'>
     <div class="modal-dialog__container">
         <div class="modal-detail-header">
-            <img src="assets/images/Logo_dark.svg" alt="PollApp Logo" class="modal-detail-header__logo" (click)="closeSurveyDetail()" />
-            <button type="button" class="btn-primary create-survey-btn" (click)="onRequestCreate()">
+            <img src="assets/images/Logo_dark.svg" alt="PollApp Logo" class="modal-detail-header__logo"
+                (click)='closeSurveyDetail()' />
+            <button type="button" class="btn-primary create-survey-btn" (click)='onRequestCreate()'>
                 Create survey
             </button>
         </div>
@@ -37,23 +38,34 @@
                     }
                 </div>
                 <div class="survey-detail__footer">
-                    <button type="button" class="btn-complete-survey" (click)="submitVote()">
+                    <button type="button" class="btn-complete-survey" (click)='submitVote()'>
                         Complete survey
                     </button>
                 </div>
             </div>
             <div class="survey-detail__right">
-                <h3 class="survey-detail__results-title">
-                    Survey results <span class="highlight-live">LIVE</span>
-                </h3>
+                <div class="results-header-row">
+                    <div class="custom-dropdown results-toggle-dropdown" [class.is-open]="!isResultsCollapsed()"
+                        [class.has-results-hidden]="!hasResults()">
+                        <button type="button" class="custom-dropdown__select" (click)='toggleResultsCollapse()'
+                            [disabled]="!hasResults()">
+                            <span class="custom-dropdown__trigger-text">{{ isResultsCollapsed() ? 'See results' : 'Close
+                                results' }}</span>
+                        </button>
+                    </div>
+                    <!-- Titel wird beim Einklappen ebenfalls ausgeblendet -->
+                    <h3 class="survey-detail__results-title" [class.is-hidden]="isResultsCollapsed()">
+                        Survey results <span class="highlight-live">LIVE</span>
+                    </h3>
+                </div>
                 @if (!hasVoted() && selectedOptionIds().length === 0) {
-                <div class="results-empty">
+                <div class="results-empty" [class.is-hidden]="!isResultsCollapsed() && hasResults()">
                     <p class="results-empty__sub">Results will be shown here after participants complete the survey.</p>
                     <p class="results-empty__main">There are no answers yet.</p>
                 </div>
                 }
                 @else {
-                <div class="results-list">
+                <div class="results-list" [class.is-hidden]="isResultsCollapsed()">
                     @for (q of selectedPoll()?.questions; track q.id; let qIndex = $index) {
                     <div class="results-item">
                         <p class="results-item__question">{{ qIndex + 1 }}. {{ q.question_text }}</p>
