@@ -43,6 +43,15 @@ export class DetailSurveyModal {
     });
 
     /**
+     * Checks if the current poll has expired based on its deadline.
+     */
+    protected readonly isExpired = computed(() => {
+        const poll = this.selectedPoll();
+        if (!poll?.expires_at) return false;
+        return new Date(poll.expires_at).getTime() < new Date().getTime();
+    });
+
+    /**
      * Opens survey detail modal dialog with poll payload.
      * @param poll - Targeted poll instance.
      */
@@ -90,6 +99,7 @@ export class DetailSurveyModal {
      * @param questionOptions - Options list for single choice handling.
      */
     protected toggleOptionSelection(optionId: number, allowMultiple: boolean, questionOptions: PollOption[]): void {
+        if (this.isExpired()) return;
         const current = this.selectedOptionIds();
         if (allowMultiple) {
             this.updateMultipleSelection(current, optionId);
@@ -127,6 +137,7 @@ export class DetailSurveyModal {
      * Submits selected votes to Supabase and notifies parent component.
      */
     protected async submitVote(): Promise<void> {
+        if (this.isExpired()) return;
         const selected = this.selectedOptionIds();
         if (selected.length > 0) {
             const success = await this.supabaseService.submitVotes(selected);
