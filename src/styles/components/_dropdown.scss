@@ -26,8 +26,8 @@
             height: 16px;
             pointer-events: none;
             background-color: $text-light;
-            -webkit-mask: url('/assets/images/arrow_drop_down.svg') no-repeat center / contain;
-            mask: url('/assets/images/arrow_drop_down.svg') no-repeat center / contain;
+            -webkit-mask: url('../../../public/assets/images/arrow_drop_down.svg') no-repeat center / contain;
+            mask: url('../../../public/assets/images/arrow_drop_down.svg') no-repeat center / contain;
             transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
         }
 

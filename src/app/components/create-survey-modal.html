@@ -1,7 +1,7 @@
 <dialog #surveyModal class="modal-dialog" (cancel)="closeModal()">
     <div class="modal-dialog__container">
         <div class="modal-dialog__mobile-logo">
-            <img src="/assets/images/Logo_dark.svg" alt="PollApp Logo" />
+            <img src="assets/images/Logo_dark.svg" alt="PollApp Logo" />
         </div>
         <div class="modal-card">
             <div class="modal-card__header">
@@ -23,7 +23,7 @@
                                 (ngModelChange)="updateTitle($event)" name="surveyName" required />
                             <button type="button" class="btn-trash" aria-label="Survey name löschen"
                                 (click)="updateTitle('')">
-                                <img src="/assets/images/Trash.svg" alt="Delete" />
+                                <img src="assets/images/Trash.svg" alt="Delete" />
                             </button>
                         </div>
                     </div>
@@ -35,7 +35,7 @@
                                     (ngModelChange)="updateEndDate($event)" name="endDate" />
                                 <button type="button" class="btn-trash" aria-label="Enddatum löschen"
                                     (click)="updateEndDate('')">
-                                    <img src="/assets/images/Trash.svg" alt="Delete" />
+                                    <img src="assets/images/Trash.svg" alt="Delete" />
                                 </button>
                             </div>
                         </div>
@@ -68,7 +68,7 @@
                             <label for="description">Describing text (optional)</label>
                             <button type="button" class="btn-trash btn-trash--mobile-header"
                                 aria-label="Beschreibung löschen" (click)="updateDescription('')">
-                                <img src="/assets/images/Trash.svg" alt="Delete" />
+                                <img src="assets/images/Trash.svg" alt="Delete" />
                             </button>
                         </div>
                         <div class="input-with-action input-with-action--full-height">
@@ -77,7 +77,7 @@
                                 name="description"></textarea>
                             <button type="button" class="btn-trash btn-trash--desktop-inline"
                                 aria-label="Beschreibung löschen" (click)="updateDescription('')">
-                                <img src="/assets/images/Trash.svg" alt="Delete" />
+                                <img src="assets/images/Trash.svg" alt="Delete" />
                             </button>
                         </div>
                     </div>
@@ -90,7 +90,7 @@
                             @if (questions().length > 1) {
                             <button type="button" class="btn-trash" aria-label="Frage löschen"
                                 (click)="removeQuestion(qIndex)">
-                                <img src="/assets/images/Trash.svg" alt="Delete" />
+                                <img src="assets/images/Trash.svg" alt="Delete" />
                             </button>
                             }
                         </div>
@@ -113,7 +113,7 @@
                             <span class="answer-option__prefix">{{ getLetterPrefix(oIndex) }}</span>
                             <button type="button" class="btn-trash btn-trash--mobile-header"
                                 aria-label="Antwort löschen" (click)="removeAnswerOption(qIndex, oIndex)">
-                                <img src="/assets/images/Trash.svg" alt="Delete" />
+                                <img src="assets/images/Trash.svg" alt="Delete" />
                             </button>
                         </div>
                         <div class="answer-option__field">
@@ -122,7 +122,7 @@
                                 [name]="'answerOption_' + qIndex + '_' + oIndex" required />
                             <button type="button" class="btn-trash btn-trash--desktop-inline"
                                 aria-label="Antwort löschen" (click)="removeAnswerOption(qIndex, oIndex)">
-                                <img src="/assets/images/Trash.svg" alt="Delete" />
+                                <img src="assets/images/Trash.svg" alt="Delete" />
                             </button>
                         </div>
                     </div>
