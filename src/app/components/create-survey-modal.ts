@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, inject, signal, output } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject, signal, output, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Category, QuestionForm } from '../interfaces/poll.interface';
 import { SupabaseService } from '../services/supabase';
@@ -39,8 +39,47 @@ export class CreateSurveyModal {
     protected readonly showSuccessOverlay = signal<boolean>(false);
     protected readonly createdPollId = signal<number | null>(null);
     protected readonly showMaxAnswersHint = signal<boolean>(false);
-
+    protected readonly touchedTitle = signal<boolean>(false);
+    protected readonly touchedCategory = signal<boolean>(false);
+    protected readonly touchedQuestions = signal<Record<number, boolean>>({});
     protected readonly getLetterPrefix = getLetterPrefix;
+
+    /**
+     * Computed signal checking if all required fields are valid to enable the publish button.
+     */
+    protected readonly isFormValid = computed(() => {
+        const titleValid = this.surveyTitle().trim().length > 0;
+        const categoryValid = this.selectedModalCategory() !== null;
+
+        const questionsValid = this.questions().every((q) => {
+            const textValid = q.questionText.trim().length > 0;
+            const validOptionsCount = q.answerOptions.filter((opt) => opt.trim().length > 0).length;
+            return textValid && validOptionsCount >= 2;
+        });
+
+        return titleValid && categoryValid && questionsValid;
+    });
+
+    /**
+     * Computed helpers for conditional error visibility.
+     */
+    protected readonly showTitleError = computed(() => {
+        return this.touchedTitle() && !this.surveyTitle().trim();
+    });
+
+    protected readonly showCategoryError = computed(() => {
+        return this.touchedCategory() && this.selectedModalCategory() === null;
+    });
+
+    /**
+     * Checks if a specific question exhibits a validation error after being touched.
+     * @param index - Index of the question.
+     * @returns True if error should be shown.
+     */
+    protected showQuestionError(index: number): boolean {
+        const q = this.questions()[index];
+        return !!this.touchedQuestions()[index] && !q.questionText.trim();
+    }
 
     /**
      * Opens the survey creation modal dialog and attaches category options.
@@ -81,12 +120,20 @@ export class CreateSurveyModal {
     }
 
     /**
-     * Sets selected category state from dropdown options.
+     * Sets selected category state from dropdown options and marks it as touched.
      * @param category - Category selected by the user.
      */
     protected selectModalCategory(category: Category): void {
         this.selectedModalCategory.set(category);
+        this.touchedCategory.set(true);
         this.isDropdownOpen.set(false);
+    }
+
+    /**
+     * Marks category dropdown as touched on blur.
+     */
+    protected markCategoryTouched(): void {
+        this.touchedCategory.set(true);
     }
 
     /**
@@ -95,6 +142,13 @@ export class CreateSurveyModal {
      */
     protected updateTitle(val: string): void {
         this.surveyTitle.set(val);
+    }
+
+    /**
+     * Marks survey title input as touched on blur.
+     */
+    protected markTitleTouched(): void {
+        this.touchedTitle.set(true);
     }
 
     /**
@@ -144,6 +198,14 @@ export class CreateSurveyModal {
             updated[index] = { ...updated[index], questionText: val };
             return updated;
         });
+    }
+
+    /**
+     * Marks a specific question text input as touched on blur.
+     * @param index - Question index.
+     */
+    protected markQuestionTouched(index: number): void {
+        this.touchedQuestions.update((t) => ({ ...t, [index]: true }));
     }
 
     /**
@@ -219,12 +281,31 @@ export class CreateSurveyModal {
         this.showMaxAnswersHint.set(false);
         this.showSuccessOverlay.set(false);
         this.createdPollId.set(null);
+        this.touchedTitle.set(false);
+        this.touchedCategory.set(false);
+        this.touchedQuestions.set({});
     }
 
     /**
-     * Submits survey creation form data to Supabase.
+     * Marks all fields as touched to trigger error messages if the user clicks publish prematurely.
+     */
+    private markAllAsTouched(): void {
+        this.touchedTitle.set(true);
+        this.touchedCategory.set(true);
+        const qTouched: Record<number, boolean> = {};
+        this.questions().forEach((_, qIndex) => {
+            qTouched[qIndex] = true;
+        });
+        this.touchedQuestions.set(qTouched);
+    }
+
+    /**
+     * Submits survey creation form data to Supabase if valid.
      */
     protected async onSubmitPoll(): Promise<void> {
+        this.markAllAsTouched();
+        if (!this.isFormValid()) return;
+
         const payload = buildPollPayload(
             this.surveyTitle(),
             this.description(),

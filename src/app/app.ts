@@ -145,9 +145,9 @@ export class App implements OnInit {
   /**
  * Resets the view to the default home overview state.
  */
-protected resetToHome(): void {
-  this.selectedCategory.set('All Surveys');
-  this.activeTab.set('active');
-  this.isOpen.set(false);
-}
+  protected resetToHome(): void {
+    this.selectedCategory.set('All Surveys');
+    this.activeTab.set('active');
+    this.isOpen.set(false);
+  }
 }

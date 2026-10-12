@@ -356,3 +356,18 @@
         font-size: 0.875rem;
     }
 }
+
+.error-message {
+    font-size: 0.875rem;
+    color: $error-red;
+    min-height: 1.25rem;
+    margin-top: 4px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    &.is-visible {
+        visibility: visible;
+        opacity: 1;
+    }
+}
