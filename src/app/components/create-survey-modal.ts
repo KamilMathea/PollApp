@@ -179,6 +179,19 @@ export class CreateSurveyModal {
     }
 
     /**
+     * Handles click on question trash button. Clears text for the first question, 
+     * or removes the entire question for any subsequent question.
+     * @param qIndex - Question index.
+     */
+    protected handleQuestionTrash(qIndex: number): void {
+        if (qIndex === 0) {
+            this.updateQuestionText(0, '');
+        } else {
+            this.removeQuestion(qIndex);
+        }
+    }
+
+    /**
      * Removes a question form item by index.
      * @param index - Target question index.
      */
