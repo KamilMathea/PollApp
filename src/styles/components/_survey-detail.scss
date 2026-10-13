@@ -34,16 +34,22 @@
         flex-direction: column;
     }
 
+    &__top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 16px;
+    }
+
     &__badge {
-        position: absolute;
-        top: 0;
-        left: 0;
         background-color: $primary-orange;
         color: $text-dark;
         font-weight: 600;
         padding: 4px 12px;
         border-top-right-radius: 14px;
         font-size: 1rem;
+        display: inline-block;
     }
 
     &__meta {
@@ -52,7 +58,7 @@
         justify-content: space-between;
         align-items: center;
         gap: 8px 16px;
-        margin: 28px 0 16px;
+        margin: 0 0 16px;
         font-size: 0.875rem;
         color: $text-dark;
     }
@@ -96,6 +102,37 @@
             color: $primary-orange;
             font-weight: 400;
         }
+    }
+}
+
+.btn-cancel-detail {
+    background-color: $secondary-orange;
+    color: $primary-purple;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: $primary-orange;
+    }
+
+    .btn-cancel__text {
+        display: none;
+    }
+
+    .btn-cancel__icon {
+        width: 0.875rem;
+        height: 0.875rem;
+        background-color: currentColor;
+        -webkit-mask: url('../../../public/assets/images/close_icon.svg') no-repeat center / contain;
+        mask: url('../../../public/assets/images/close_icon.svg') no-repeat center / contain;
+        display: inline-flex;
     }
 }
 

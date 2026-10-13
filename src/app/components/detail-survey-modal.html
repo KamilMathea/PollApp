@@ -9,7 +9,14 @@
         </div>
         <div class="survey-detail">
             <div class="survey-detail__left">
-                <div class="survey-detail__badge">Published</div>
+                <div class="survey-detail__top-row">
+                    <span class="survey-detail__badge">Published</span>
+                    <button type="button" class="btn-cancel-detail" aria-label="Modal schließen"
+                        (click)='closeSurveyDetail()'>
+                        <span class="btn-cancel__text">Cancel</span>
+                        <span class="btn-cancel__icon">&times;</span>
+                    </button>
+                </div>
                 <div class="survey-detail__meta">
                     <span class="survey-detail__date">Ends on {{ selectedPoll()?.expires_at | date:'dd.MM.yyyy'
                         }}</span>
