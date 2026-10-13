@@ -44,6 +44,7 @@ export class CreateSurveyModal {
     protected readonly touchedQuestions = signal<Record<number, boolean>>({});
     protected readonly getLetterPrefix = getLetterPrefix;
     protected readonly touchedAnswers = signal<Record<string, boolean>>({});
+    protected readonly minDate = signal<string>(new Date().toISOString().split('T')[0]);
 
     /**
      * Computed signal checking if all required fields are valid to enable the publish button.
@@ -51,12 +52,15 @@ export class CreateSurveyModal {
     protected readonly isFormValid = computed(() => {
         const titleValid = this.surveyTitle().trim().length > 0;
         const categoryValid = this.selectedModalCategory() !== null;
+        const dateVal = this.endDate();
+        const todayStr = new Date().toISOString().split('T')[0];
+        const dateValid = !dateVal || dateVal >= todayStr;
         const questionsValid = this.questions().every((q) => {
             const textValid = q.questionText.trim().length > 0;
             const validOptionsCount = q.answerOptions.filter((opt) => opt.trim().length > 0).length;
             return textValid && validOptionsCount >= 2;
         });
-        return titleValid && categoryValid && questionsValid;
+        return titleValid && categoryValid && dateValid && questionsValid;
     });
 
     /**
@@ -72,6 +76,17 @@ export class CreateSurveyModal {
     });
 
     /**
+     * Computed signal checking if the selected end date is invalid (lies in the past).
+     */
+    protected readonly showDateError = computed(() => {
+        const dateVal = this.endDate();
+        if (!dateVal) return false;
+        const todayStr = new Date().toISOString().split('T')[0];
+        // Greift nur, wenn ein vollständiges Datum vorliegt und dieses kleiner als heute ist
+        return dateVal.length === 10 && dateVal < todayStr;
+    });
+
+    /**
      * Checks if a specific question exhibits a validation error after being touched.
      * @param index - Index of the question.
      * @returns True if error should be shown.
@@ -81,15 +96,24 @@ export class CreateSurveyModal {
         return (!!this.touchedQuestions()[index] || q.questionText.length > 0) && !q.questionText.trim();
     }
 
+    /**
+     * Checks if a specific answer option exhibits a validation error when touched or typed into.
+     * @param qIndex - Index of the question.
+     * @param oIndex - Index of the answer option.
+     * @returns True if error should be shown.
+     */
     protected showAnswerError(qIndex: number, oIndex: number): boolean {
         const opt = this.questions()[qIndex].answerOptions[oIndex] || '';
         const isTouched = this.touchedAnswers()[`${qIndex}_${oIndex}`];
-        // Zeige Fehler, wenn getippt/berührt wurde, aber nur Leerzeichen (oder leer) drin stehen, 
-        // und insgesamt weniger als 2 valide Antworten existieren.
         const validOptionsCount = this.questions()[qIndex].answerOptions.filter((o) => o.trim().length > 0).length;
         return (isTouched || opt.length > 0) && !opt.trim() && validOptionsCount < 2;
     }
 
+    /**
+     * Marks a specific answer option input as touched on blur.
+     * @param qIndex - Index of the question.
+     * @param oIndex - Index of the answer option.
+     */
     protected markAnswerTouched(qIndex: number, oIndex: number): void {
         this.touchedAnswers.update((t) => ({ ...t, [`${qIndex}_${oIndex}`]: true }));
     }
