@@ -26,16 +26,17 @@
   position: relative;
 
   &::after {
-    content: '+';
+    content: '';
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    border: 2px solid $text-dark;
-    background-color: $primary-orange;
-    color: $text-dark;
+    border: 2px solid currentColor;
+    background-color: currentColor;
+    -webkit-mask: url('../../../public/assets/images/plus_icon.svg') no-repeat center / 1rem;
+    mask: url('../../../public/assets/images/plus_icon.svg') no-repeat center / 1rem;
     opacity: 0;
     max-width: 0;
     margin-left: 0;
@@ -50,7 +51,6 @@
       opacity: 1;
       max-width: 20px;
       margin-left: 10px;
-      color: $text-dark;
       transform: scale(1);
     }
   }

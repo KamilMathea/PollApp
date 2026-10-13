@@ -141,7 +141,7 @@
                         <button type="button" class="btn-add-answer" [disabled]="q.answerOptions.length >= 6"
                             (click)="addAnswerOption(qIndex)">
                             <span>Add answer</span>
-                            <span class="btn-add-answer__icon">+</span>
+                            <span class="btn-add-answer__icon"></span>
                         </button>
                         @if (showMaxAnswersHint()) {
                         <span class="add-answer-hint">You can add up to 6 answer fields.</span>
@@ -153,7 +153,7 @@
                     <button type="button" class="btn-add-next-question" [disabled]="questions().length >= 6"
                         (click)="addQuestion()">
                         <span>Add next question</span>
-                        <span class="btn-add-next-question__icon">+</span>
+                        <span class="btn-add-next-question__icon"></span>
                     </button>
                 </div>
             </form>
