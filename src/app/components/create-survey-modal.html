@@ -17,7 +17,8 @@
                         <label for="surveyName">Survey name</label>
                         <div class="input-with-action">
                             <input type="text" id="surveyName" class="form-control" [ngModel]="surveyTitle()"
-                                (ngModelChange)="updateTitle($event)" (blur)="markTitleTouched()" name="surveyName" />
+                                (ngModelChange)="updateTitle($event)" (blur)="markTitleTouched()" name="surveyName"
+                                maxlength="80" />
                             <button type="button" class="btn-trash" aria-label="Survey name löschen"
                                 (click)="updateTitle('')">
                                 <img src="assets/images/Trash.svg" alt="Delete" />
@@ -77,8 +78,8 @@
                         </div>
                         <div class="input-with-action input-with-action--full-height">
                             <textarea id="description" class="form-control form-control--textarea"
-                                [ngModel]="description()" (ngModelChange)="updateDescription($event)"
-                                name="description"></textarea>
+                                [ngModel]="description()" (ngModelChange)="updateDescription($event)" name="description"
+                                maxlength="300"></textarea>
                             <button type="button" class="btn-trash btn-trash--desktop-inline"
                                 aria-label="Beschreibung löschen" (click)="updateDescription('')">
                                 <img src="assets/images/Trash.svg" alt="Delete" />
@@ -99,7 +100,7 @@
                         <div class="input-with-action">
                             <input type="text" [id]="'question' + qIndex" class="form-control"
                                 [ngModel]="q.questionText" (ngModelChange)="updateQuestionText(qIndex, $event)"
-                                (blur)="markQuestionTouched(qIndex)" [name]="'questionText' + qIndex" />
+                                (blur)="markQuestionTouched(qIndex)" [name]="'questionText' + qIndex" maxlength="120" />
                         </div>
                         <div class="error-message" [class.is-visible]="showQuestionError(qIndex)">
                             Question text is required.
@@ -128,7 +129,7 @@
                                 <input type="text" class="form-control" [ngModel]="option"
                                     (ngModelChange)="updateAnswerOption(qIndex, oIndex, $event)"
                                     (blur)="markAnswerTouched(qIndex, oIndex)"
-                                    [name]="'answerOption_' + qIndex + '_' + oIndex" />
+                                    [name]="'answerOption_' + qIndex + '_' + oIndex" maxlength="80" />
                                 <button type="button" class="btn-trash btn-trash--desktop-inline"
                                     aria-label="Antwort löschen" (click)="handleAnswerTrash(qIndex, oIndex)">
                                     <img src="assets/images/Trash.svg" alt="Delete" />

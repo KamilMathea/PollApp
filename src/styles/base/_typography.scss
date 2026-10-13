@@ -31,10 +31,24 @@ body {
   color: rgba(255, 255, 255, 1);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: $font-heading;
 }
 
 button {
   font-family: $font-button;
+}
+
+.modal-card,
+.survey-form,
+.survey-card,
+.survey-card-dark,
+.survey-detail {
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
