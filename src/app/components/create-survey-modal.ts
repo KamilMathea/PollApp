@@ -324,6 +324,7 @@ export class CreateSurveyModal {
         this.touchedTitle.set(false);
         this.touchedCategory.set(false);
         this.touchedQuestions.set({});
+        this.touchedAnswers.set({});
     }
 
     /**
