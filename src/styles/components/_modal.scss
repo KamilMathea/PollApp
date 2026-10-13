@@ -13,6 +13,12 @@
         background-color: $color-white-soft;
     }
 
+    &--create {
+        &::backdrop {
+            background-color: $bg-backdrop;
+        }
+    }
+
     &__container {
         display: flex;
         flex-direction: column;
