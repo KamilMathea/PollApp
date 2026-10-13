@@ -47,8 +47,7 @@
                 </div>
                 <div class="survey-detail__footer">
                     @if (!isExpired()) {
-                    <button type="button" class="btn-complete-survey" [disabled]="selectedOptionIds().length === 0"
-                        (click)='submitVote()'>
+                    <button type="button" class="btn-complete-survey" (click)='submitVote()'>
                         Complete survey
                     </button>
                     } @else {
