@@ -43,6 +43,7 @@ export class CreateSurveyModal {
     protected readonly touchedCategory = signal<boolean>(false);
     protected readonly touchedQuestions = signal<Record<number, boolean>>({});
     protected readonly getLetterPrefix = getLetterPrefix;
+    protected readonly touchedAnswers = signal<Record<string, boolean>>({});
 
     /**
      * Computed signal checking if all required fields are valid to enable the publish button.
@@ -50,13 +51,11 @@ export class CreateSurveyModal {
     protected readonly isFormValid = computed(() => {
         const titleValid = this.surveyTitle().trim().length > 0;
         const categoryValid = this.selectedModalCategory() !== null;
-
         const questionsValid = this.questions().every((q) => {
             const textValid = q.questionText.trim().length > 0;
             const validOptionsCount = q.answerOptions.filter((opt) => opt.trim().length > 0).length;
             return textValid && validOptionsCount >= 2;
         });
-
         return titleValid && categoryValid && questionsValid;
     });
 
@@ -64,7 +63,8 @@ export class CreateSurveyModal {
      * Computed helpers for conditional error visibility.
      */
     protected readonly showTitleError = computed(() => {
-        return this.touchedTitle() && !this.surveyTitle().trim();
+        const val = this.surveyTitle();
+        return (this.touchedTitle() || val.length > 0) && !val.trim();
     });
 
     protected readonly showCategoryError = computed(() => {
@@ -78,7 +78,20 @@ export class CreateSurveyModal {
      */
     protected showQuestionError(index: number): boolean {
         const q = this.questions()[index];
-        return !!this.touchedQuestions()[index] && !q.questionText.trim();
+        return (!!this.touchedQuestions()[index] || q.questionText.length > 0) && !q.questionText.trim();
+    }
+
+    protected showAnswerError(qIndex: number, oIndex: number): boolean {
+        const opt = this.questions()[qIndex].answerOptions[oIndex] || '';
+        const isTouched = this.touchedAnswers()[`${qIndex}_${oIndex}`];
+        // Zeige Fehler, wenn getippt/berührt wurde, aber nur Leerzeichen (oder leer) drin stehen, 
+        // und insgesamt weniger als 2 valide Antworten existieren.
+        const validOptionsCount = this.questions()[qIndex].answerOptions.filter((o) => o.trim().length > 0).length;
+        return (isTouched || opt.length > 0) && !opt.trim() && validOptionsCount < 2;
+    }
+
+    protected markAnswerTouched(qIndex: number, oIndex: number): void {
+        this.touchedAnswers.update((t) => ({ ...t, [`${qIndex}_${oIndex}`]: true }));
     }
 
     /**
@@ -320,19 +333,24 @@ export class CreateSurveyModal {
         this.touchedTitle.set(true);
         this.touchedCategory.set(true);
         const qTouched: Record<number, boolean> = {};
-        this.questions().forEach((_, qIndex) => {
+        const aTouched: Record<string, boolean> = {};
+        this.questions().forEach((q, qIndex) => {
             qTouched[qIndex] = true;
+            q.answerOptions.forEach((_, oIndex) => {
+                aTouched[`${qIndex}_${oIndex}`] = true;
+            });
         });
         this.touchedQuestions.set(qTouched);
+        this.touchedAnswers.set(aTouched);
     }
 
     /**
-     * Submits survey creation form data to Supabase if valid.
+     * Submits survey creation form data to Supabase if valid, 
+     * or triggers all validation error states if invalid.
      */
     protected async onSubmitPoll(): Promise<void> {
         this.markAllAsTouched();
         if (!this.isFormValid()) return;
-
         const payload = buildPollPayload(
             this.surveyTitle(),
             this.description(),

@@ -115,22 +115,28 @@
                         </label>
                     </div>
                     @for (option of q.answerOptions; track $index; let oIndex = $index) {
-                    <div class="answer-option">
-                        <div class="answer-option__header">
-                            <span class="answer-option__prefix">{{ getLetterPrefix(oIndex) }}</span>
-                            <button type="button" class="btn-trash btn-trash--mobile-header"
-                                aria-label="Antwort löschen" (click)="handleAnswerTrash(qIndex, oIndex)">
-                                <img src="assets/images/Trash.svg" alt="Delete" />
-                            </button>
+                    <div class="answer-option-wrapper">
+                        <div class="answer-option">
+                            <div class="answer-option__header">
+                                <span class="answer-option__prefix">{{ getLetterPrefix(oIndex) }}</span>
+                                <button type="button" class="btn-trash btn-trash--mobile-header"
+                                    aria-label="Antwort löschen" (click)="handleAnswerTrash(qIndex, oIndex)">
+                                    <img src="assets/images/Trash.svg" alt="Delete" />
+                                </button>
+                            </div>
+                            <div class="answer-option__field">
+                                <input type="text" class="form-control" [ngModel]="option"
+                                    (ngModelChange)="updateAnswerOption(qIndex, oIndex, $event)"
+                                    (blur)="markAnswerTouched(qIndex, oIndex)"
+                                    [name]="'answerOption_' + qIndex + '_' + oIndex" />
+                                <button type="button" class="btn-trash btn-trash--desktop-inline"
+                                    aria-label="Antwort löschen" (click)="handleAnswerTrash(qIndex, oIndex)">
+                                    <img src="assets/images/Trash.svg" alt="Delete" />
+                                </button>
+                            </div>
                         </div>
-                        <div class="answer-option__field">
-                            <input type="text" class="form-control" [ngModel]="option"
-                                (ngModelChange)="updateAnswerOption(qIndex, oIndex, $event)"
-                                [name]="'answerOption_' + qIndex + '_' + oIndex" />
-                            <button type="button" class="btn-trash btn-trash--desktop-inline"
-                                aria-label="Antwort löschen" (click)="handleAnswerTrash(qIndex, oIndex)">
-                                <img src="assets/images/Trash.svg" alt="Delete" />
-                            </button>
+                        <div class="error-message" [class.is-visible]="showAnswerError(qIndex, oIndex)">
+                            Answer option is required (min. 2 valid answers).
                         </div>
                     </div>
                     }
@@ -156,8 +162,7 @@
             </form>
             <div class="modal-card__footer">
                 <div class="publish-container">
-                    <button type="button" class="btn-primary btn-publish" [disabled]="!isFormValid()"
-                        (click)="onSubmitPoll()">
+                    <button type="button" class="btn-primary btn-publish" (click)="onSubmitPoll()">
                         Publish
                     </button>
                     @if (showSuccessOverlay()) {
