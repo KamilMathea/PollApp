@@ -6,13 +6,11 @@ import { Poll, Question, PollOption, Category } from '../interfaces/poll.interfa
  * @returns Human readable remaining time string.
  */
 export function formatRemainingTime(expiresAt?: string): string {
-    if (!expiresAt) return 'No deadline';
+    if (!expiresAt) return 'Ends in 1 day';
     const diff = new Date(expiresAt).getTime() - new Date().getTime();
     if (diff <= 0) return 'Ended';
-
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     if (days > 0) return `Ends in ${days} day${days > 1 ? 's' : ''}`;
-
     const hours = Math.floor(diff / (1000 * 60 * 60));
     return `Ends in ${hours} hour${hours > 1 ? 's' : ''}`;
 }
@@ -71,13 +69,21 @@ export function getOptionPercentage(
 }
 
 /**
- * Builds payload object for poll table insertion.
+ * Builds payload object for poll table insertion. If no end date is provided, 
+ * sets a default expiration of exactly 1 day from now.
  */
 export function buildPollPayload(title: string, description: string, category: Category | null, endDate: string) {
+    let expirationDate: Date;
+    if (endDate) {
+        expirationDate = new Date(endDate);
+    } else {
+        expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + 1);
+    }
     return {
         title: title,
         description: description || null,
         category_id: category ? category.id : null,
-        expires_at: endDate ? new Date(endDate).toISOString() : null,
+        expires_at: expirationDate.toISOString(),
     };
 }
