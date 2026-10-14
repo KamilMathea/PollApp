@@ -216,15 +216,23 @@ export class CreateSurveyModal {
     }
 
     /**
-     * Handles click on question trash button. Clears text for the first question, 
-     * or removes the entire question for any subsequent question.
+     * Handles click on question trash button. 
+     * For the first question (index 0), it always clears the text.
+     * For subsequent questions (index > 0): 
+     * - First click clears the text if text is present.
+     * - Second click (or if text is already empty) removes the entire question section.
      * @param qIndex - Question index.
      */
     protected handleQuestionTrash(qIndex: number): void {
         if (qIndex === 0) {
             this.updateQuestionText(0, '');
         } else {
-            this.removeQuestion(qIndex);
+            const currentText = this.questions()[qIndex].questionText;
+            if (currentText.trim().length > 0) {
+                this.updateQuestionText(qIndex, '');
+            } else {
+                this.removeQuestion(qIndex);
+            }
         }
     }
 
