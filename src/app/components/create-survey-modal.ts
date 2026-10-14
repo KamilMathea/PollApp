@@ -80,17 +80,6 @@ export class CreateSurveyModal {
     });
 
     /**
-     * Computed signal checking if the selected end date is invalid (lies in the past).
-     */
-    protected readonly showDateError = computed(() => {
-        const dateVal = this.endDate();
-        if (!dateVal) return false;
-        const todayStr = new Date().toISOString().split('T')[0];
-        // Greift nur, wenn ein vollständiges Datum vorliegt und dieses kleiner als heute ist
-        return dateVal.length === 10 && dateVal < todayStr;
-    });
-
-    /**
      * Checks if a specific question exhibits a validation error after being touched.
      * @param index - Index of the question.
      * @returns True if error should be shown.

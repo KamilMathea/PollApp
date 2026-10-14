@@ -1,11 +1,9 @@
-// Brand Colors
+// Brand & Accent Colors
 $primary-purple: rgba(53, 39, 58, 1);
 $primary-orange: rgba(255, 183, 112, 1);
 $secondary-orange: rgba(255, 207, 161, 1);
 $heading-orange: rgba(238, 146, 54, 1);
 $percent-orange: rgba(215, 148, 81, 1);
-
-// Accent & State Colors
 $orange-light: rgba(254, 233, 212, 1);
 $orange-translucent: rgba(255, 183, 112, 0.3);
 
@@ -18,23 +16,18 @@ $bg-card-dark: rgba(217, 217, 217, 0.08);
 $bg-card-dark-hover: rgba(217, 217, 217, 0.16);
 $bg-dropdown-hover: rgba(217, 217, 217, 0.12);
 $bg-detail-card: rgba(142, 112, 153, 0.1);
-
-// Common Shared Colors
-$color-white-soft: rgba(254, 253, 255, 1);
 $bg-inner-card: rgba(142, 112, 153, 0.16);
-
-// Text & Basic Colors
-$text-light: rgba(255, 255, 255, 1);
-$text-dark: rgba(34, 18, 39, 1);
-
-// Error / Validation Color
-$error-red: rgba(235, 87, 87, 1);
-
-// Success / Feedback Color
-$success-green: rgba(39, 174, 96, 1);
-
-// Backdrop Overlay Color
 $bg-backdrop: rgba(34, 18, 39, 0.75);
 
+// Text & Common Colors
+$text-light: rgba(255, 255, 255, 1);
+$text-dark: rgba(34, 18, 39, 1);
+$color-white-soft: rgba(254, 253, 255, 1);
+
+// State Colors
+$error-red: rgba(235, 87, 87, 1);
+$success-green: rgba(39, 174, 96, 1);
+
+// Radii & Layout Metrics
 $radius-button: 10px;
 $radius-filter: 20px;
