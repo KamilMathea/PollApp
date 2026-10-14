@@ -89,6 +89,12 @@
   </div>
 </section>
 
+@if (showVoteSuccessToast()) {
+<div class="vote-success-toast">
+    <span>Your vote has been submitted successfully!</span>
+</div>
+}
+
 <app-create-survey-modal #createModal (pollCreated)="onPollCreated($event)" />
 
 <app-detail-survey-modal #detailModal (createRequested)="openModal()" (voteSubmitted)="onVoteSubmitted()" />

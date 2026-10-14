@@ -305,6 +305,24 @@
     display: none;
 }
 
+.vote-success-toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: $orange-light;
+    color: $primary-purple;
+    padding: 16px 24px;
+    border-radius: 10px;
+    border: 4px solid $success-green;
+    font-weight: 700;
+    font-size: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    text-align: center;
+    width: min(90%, 500px);
+}
+
 @media (max-width: 1024px) {
     .create-survey-btn {
         padding: clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 20px);

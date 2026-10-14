@@ -27,8 +27,8 @@ export class App implements OnInit {
   protected readonly activeTab = signal<'active' | 'past'>('active');
   protected readonly polls = signal<Poll[]>([]);
   protected readonly dbCategories = signal<Category[]>([]);
-
   protected readonly formatRemainingTime = formatRemainingTime;
+  protected readonly showVoteSuccessToast = signal<boolean>(false);
 
   /**
    * Angular lifecycle hook initializing categories and poll list.
@@ -136,10 +136,14 @@ export class App implements OnInit {
   }
 
   /**
-   * Handles re-fetching polls after vote submission.
-   */
+     * Handles re-fetching polls after vote submission and shows a short success feedback.
+     */
   protected async onVoteSubmitted(): Promise<void> {
     await this.loadPolls();
+    this.showVoteSuccessToast.set(true);
+    setTimeout(() => {
+      this.showVoteSuccessToast.set(false);
+    }, 3000);
   }
 
   /**
