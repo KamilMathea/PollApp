@@ -71,6 +71,10 @@ export class CreateSurveyModal {
         return (this.touchedTitle() || val.length > 0) && !val.trim();
     });
 
+    /**
+     * Checks if the category selection exhibits a validation error after being touched.
+     * @returns True if category error should be shown.
+     */
     protected readonly showCategoryError = computed(() => {
         return this.touchedCategory() && this.selectedModalCategory() === null;
     });

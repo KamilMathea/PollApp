@@ -173,6 +173,13 @@
             background-color: $primary-orange;
             border-radius: 4px;
         }
+
+        p {
+            font-size: 2rem;
+            font-family: 'Nerko One';
+            text-align: center;
+            margin-top: 24px;
+        }
     }
 
     @media (min-width: 1025px) {
